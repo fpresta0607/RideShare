@@ -60,39 +60,49 @@ export default function RideComparison({ searchData }: RideComparisonProps) {
 
   const { rides, recommendedRide, tripInfo } = data;
 
-  // Calculate potential savings for recommended ride vs alternatives
+  // Calculate potential savings based on difference between top two options
   const calculateSavings = () => {
     const preference = tripInfo.preference;
-    const recommendedPrice = parseFloat(String(recommendedRide.price).replace('$', ''));
     
-    if (preference === "price") {
-      // Compare against most expensive alternative from other platform
-      const otherPlatformRides = rides.filter(r => r.service !== recommendedRide.service);
-      if (otherPlatformRides.length > 0) {
-        const maxPrice = Math.max(...otherPlatformRides.map(r => parseFloat(String(r.price).replace('$', ''))));
-        return { savings: Math.max(0, maxPrice - recommendedPrice), minutes: 0 };
+    // Sort rides by preference to find top two
+    const sortedRides = [...rides].sort((a, b) => {
+      switch (preference) {
+        case 'price':
+          return parseFloat(String(a.price).replace('$', '')) - parseFloat(String(b.price).replace('$', ''));
+        case 'speed':
+          return (a.eta || 0) - (b.eta || 0);
+        case 'luxury':
+          const aIsLuxury = (a.luxuryLevel || 0) >= 4;
+          const bIsLuxury = (b.luxuryLevel || 0) >= 4;
+          if (aIsLuxury && !bIsLuxury) return -1;
+          if (!aIsLuxury && bIsLuxury) return 1;
+          if (aIsLuxury && bIsLuxury) {
+            return parseFloat(String(a.price).replace('$', '')) - parseFloat(String(b.price).replace('$', ''));
+          }
+          return (b.luxuryLevel || 0) - (a.luxuryLevel || 0);
+        default:
+          return 0;
       }
-    } else if (preference === "speed") {
-      // Compare ETA times and track time savings in minutes only
-      const slowestEta = Math.max(...rides.map(r => r.eta || 0));
-      const recommendedEta = recommendedRide.eta || 0;
-      const minutesSaved = Math.max(0, slowestEta - recommendedEta);
-      // Return only time saved, not monetary value (time value is subjective)
-      return { savings: 0, minutes: minutesSaved };
-    } else if (preference === "luxury") {
-      // Compare against other luxury options
-      const luxuryRides = rides.filter(r => 
-        r.id !== recommendedRide.id &&
-        (r.name?.toLowerCase().includes('black') || 
-         r.name?.toLowerCase().includes('lux') || 
-         r.name?.toLowerCase().includes('xl') ||
-         (r.luxuryLevel || 0) >= 4)
-      );
-      if (luxuryRides.length > 0) {
-        const maxLuxuryPrice = Math.max(...luxuryRides.map(r => parseFloat(String(r.price).replace('$', ''))));
-        return { savings: Math.max(0, maxLuxuryPrice - recommendedPrice), minutes: 0 };
-      }
+    });
+
+    if (sortedRides.length < 2) {
+      return { savings: 0, minutes: 0 };
     }
+
+    const bestOption = sortedRides[0];
+    const secondBestOption = sortedRides[1];
+    
+    if (preference === "price" || preference === "luxury") {
+      const bestPrice = parseFloat(String(bestOption.price).replace('$', ''));
+      const secondPrice = parseFloat(String(secondBestOption.price).replace('$', ''));
+      return { savings: Math.max(0, secondPrice - bestPrice), minutes: 0 };
+    } else if (preference === "speed") {
+      const bestEta = bestOption.eta || 0;
+      const secondEta = secondBestOption.eta || 0;
+      const minutesSaved = Math.max(0, secondEta - bestEta);
+      return { savings: 0, minutes: minutesSaved };
+    }
+    
     return { savings: 0, minutes: 0 };
   };
 

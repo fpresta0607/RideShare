@@ -48,13 +48,12 @@ export default function Settings() {
       date.setDate(date.getDate() - (i * (config.months * 30) / pointsCount));
       
       // Simulate progressive savings growth
-      const progress = (pointsCount - i) / pointsCount;
-      const totalSavings = analyticsData?.totalSavings || 20;
-      const savings = Math.max(0, totalSavings * progress + (Math.random() - 0.5) * 2);
+      const progressRatio = (pointsCount - i) / pointsCount;
+      const savings = analyticsData.totalSavings * progressRatio * (0.7 + Math.random() * 0.6);
       
       dataPoints.push({
         date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        savings: Math.round(savings * 100) / 100
+        savings: Math.max(0, savings)
       });
     }
     
@@ -84,8 +83,7 @@ export default function Settings() {
     name: '',
     email: '',
     phoneNumber: '',
-    preferredPayment: 'card',
-    memberSince: new Date().toISOString()
+    preferredPayment: 'card'
   };
 
   const safeAnalyticsData = analyticsData || {
@@ -114,6 +112,7 @@ export default function Settings() {
     });
   };
 
+  // Calculate total accumulated savings from ride comparisons
   const calculateAccumulatedSavings = () => {
     if (!userProfile) return 0;
     return parseFloat(userProfile.totalSavings || '0');
@@ -175,7 +174,7 @@ export default function Settings() {
                 
                 <div className="flex items-center space-x-3">
                   <Calendar className="w-4 h-4 text-gray-400" />
-                  <div className="text-sm">Member since {formatDate(userProfile.memberSince || new Date().toISOString())}</div>
+                  <div className="text-sm">Member since {formatDate(userProfile.memberSince)}</div>
                 </div>
               </>
             ) : (
@@ -202,77 +201,72 @@ export default function Settings() {
                 <Skeleton className="h-16" />
                 <Skeleton className="h-16" />
               </div>
-            ) : (
+            ) : user ? (
               <div className="grid grid-cols-2 gap-4">
-                <div className="text-center space-y-1">
-                  <div className="text-xl font-bold text-gray-900">
-                    {safeUserProfile.totalRides}
-                  </div>
-                  <div className="text-sm text-gray-600">Total rides</div>
+                <div className="text-center p-3 bg-blue-50 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600">{user.totalRides}</div>
+                  <div className="text-xs text-blue-600">Total Rides</div>
                 </div>
-                <div className="text-center space-y-1">
-                  <div className="text-xl font-bold text-green-600">
-                    ${safeUserProfile.totalSavings}
-                  </div>
-                  <div className="text-sm text-gray-600">Total saved</div>
+                
+                <div className="text-center p-3 bg-red-50 rounded-lg">
+                  <div className="text-2xl font-bold text-red-600">${user.totalSpent}</div>
+                  <div className="text-xs text-red-600">Total Spent</div>
                 </div>
-                <div className="text-center space-y-1">
-                  <div className="text-xl font-bold text-blue-600">
-                    {safeUserProfile.totalTimeSaved}
-                  </div>
-                  <div className="text-sm text-gray-600">Minutes saved</div>
+                
+                <div className="text-center p-3 bg-green-50 rounded-lg">
+                  <div className="text-2xl font-bold text-green-600">${user.totalSavings}</div>
+                  <div className="text-xs text-green-600">Total Savings</div>
                 </div>
-                <div className="text-center space-y-1">
-                  <div className="text-xl font-bold text-purple-600">
-                    ${(parseFloat(safeUserProfile.totalSavings || '0') * 12).toFixed(0)}
+                
+                <div className="text-center p-3 bg-purple-50 rounded-lg">
+                  <div className="text-2xl font-bold text-purple-600">
+                    ${(parseFloat(user.totalSpent) / Math.max(1, user.totalRides)).toFixed(0)}
                   </div>
-                  <div className="text-sm text-gray-600">Yearly projection</div>
+                  <div className="text-xs text-purple-600">Avg per Ride</div>
                 </div>
               </div>
-            )}
+            ) : null}
           </CardContent>
         </Card>
 
-        {/* Analytics */}
+        {/* Savings Analytics */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <DollarSign className="w-5 h-5" />
-                <span>Savings Analytics</span>
-              </div>
-              <div className="flex space-x-1">
-                {(['3M', '6M', '1Y', 'ALL'] as const).map((period) => (
-                  <Button
-                    key={period}
-                    variant={analyticsPeriod === period ? "default" : "ghost"}
-                    size="sm"
-                    className="text-xs px-2 py-1 h-6"
-                    onClick={() => setAnalyticsPeriod(period)}
-                  >
-                    {period}
-                  </Button>
-                ))}
-              </div>
+            <CardTitle className="flex items-center space-x-2">
+              <TrendingUp className="w-5 h-5" />
+              <span>Savings Analytics</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {/* Period Selector */}
+            <Tabs value={analyticsPeriod} onValueChange={setAnalyticsPeriod} className="mb-4">
+              <TabsList className="grid grid-cols-4 w-full">
+                <TabsTrigger value="3M">3M</TabsTrigger>
+                <TabsTrigger value="6M">6M</TabsTrigger>
+                <TabsTrigger value="1Y">1Y</TabsTrigger>
+                <TabsTrigger value="ALL">ALL</TabsTrigger>
+              </TabsList>
+            </Tabs>
+
             {analyticsLoading ? (
-              <Skeleton className="h-40 w-full" />
-            ) : (
-              <div className="space-y-4">
-                {/* Summary Cards */}
-                <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-3">
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-16 w-full" />
+              </div>
+            ) : analyticsData ? (
+              <>
+                {/* Key Metrics */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                     <div className="flex items-center space-x-2">
                       <DollarSign className="w-5 h-5 text-green-600" />
                       <span className="text-sm font-medium text-green-800">Total Savings</span>
                     </div>
                     <div className="text-2xl font-bold text-green-900 mt-2">
-                      ${safeAnalyticsData.totalSavings.toFixed(2)}
+                      ${analyticsData.totalSavings.toFixed(2)}
                     </div>
                     <div className="text-xs text-green-600 mt-1">
-                      All ride optimizations
+                      {analyticsData.rideCount} rides analyzed
                     </div>
                   </div>
                   <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
@@ -294,7 +288,7 @@ export default function Settings() {
                   <h4 className="text-sm font-medium text-gray-700 mb-3">Savings Over Time</h4>
                   <div className="h-40">
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={generateTimeSeriesData(safeAnalyticsData, analyticsPeriod)}>
+                      <LineChart data={generateTimeSeriesData(analyticsData, analyticsPeriod)}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                         <XAxis 
                           dataKey="date" 
@@ -309,7 +303,7 @@ export default function Settings() {
                           tickFormatter={(value) => `$${value}`}
                         />
                         <Tooltip 
-                          formatter={(value) => [`$${Number(value).toFixed(2)}`, 'Savings']}
+                          formatter={(value) => [`$${value.toFixed(2)}`, 'Savings']}
                           labelFormatter={(label) => `Date: ${label}`}
                           contentStyle={{ 
                             backgroundColor: '#fff',
@@ -324,7 +318,7 @@ export default function Settings() {
                           stroke="#10b981" 
                           strokeWidth={2}
                           dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
-                          activeDot={{ r: 6, stroke: '#10b981', strokeWidth: 2, fill: '#fff' }}
+                          activeDot={{ r: 6, fill: '#10b981' }}
                         />
                       </LineChart>
                     </ResponsiveContainer>
@@ -344,7 +338,7 @@ export default function Settings() {
                       </button>
                     </div>
                     <span className="font-medium text-green-600">
-                      ${safeAnalyticsData.priceSavings.toFixed(2)}
+                      ${analyticsData.priceSavings.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
@@ -358,7 +352,7 @@ export default function Settings() {
                       </button>
                     </div>
                     <span className="font-medium text-amber-600">
-                      ${safeAnalyticsData.luxurySavings.toFixed(2)}
+                      ${analyticsData.luxurySavings.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
@@ -372,37 +366,37 @@ export default function Settings() {
                       </button>
                     </div>
                     <span className="font-medium text-blue-600">
-                      {safeAnalyticsData.totalMinutesSaved} min
+                      {analyticsData.totalMinutesSaved} min
                     </span>
                   </div>
                 </div>
-              </div>
-            )}
+              </>
+            ) : null}
           </CardContent>
         </Card>
 
-        {/* Recent Rides */}
+        {/* Recent Ride History */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <MapPin className="w-5 h-5" />
+              <Clock className="w-5 h-5" />
               <span>Recent Rides</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {historyLoading ? (
               <div className="space-y-3">
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} className="h-16 w-full" />
+                ))}
               </div>
             ) : rideHistory.length > 0 ? (
               <div className="space-y-3">
                 {rideHistory.slice(0, 5).map((ride) => (
-                  <div key={ride.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                    <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+                  <div key={ride.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                    <MapPin className="w-4 h-4 text-gray-400 mt-1 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between mb-1">
                         <div className="text-sm font-medium text-gray-900 truncate">
                           {ride.fromLocation}
                         </div>
@@ -457,11 +451,7 @@ export default function Settings() {
             <Button variant="outline" className="w-full justify-start">
               Help & Support
             </Button>
-            <Button 
-              variant="outline" 
-              className="w-full justify-start text-red-600 hover:text-red-700"
-              onClick={() => window.location.href = '/api/logout'}
-            >
+            <Button variant="outline" className="w-full justify-start text-red-600 hover:text-red-700">
               Sign Out
             </Button>
           </CardContent>
