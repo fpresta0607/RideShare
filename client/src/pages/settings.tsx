@@ -101,24 +101,28 @@ export default function Settings() {
     queryFn: () => api.getSavingsAnalytics(analyticsPeriod),
   });
 
-  // Provide fallback values
+  // Check if we're using demo data
+  const isDemoUser = !!localStorage.getItem('demoUser');
+  const demoUserData = isDemoUser ? JSON.parse(localStorage.getItem('demoUser') || '{}') : {};
+
+  // Provide fallback values with demo data support
   const safeUserProfile = userProfile || {
-    totalSavings: '0.00',
-    totalTimeSaved: 0,
-    totalRides: 0,
-    name: '',
-    email: '',
-    phoneNumber: '',
-    preferredPayment: 'card',
-    memberSince: new Date().toISOString()
+    totalSavings: isDemoUser ? demoUserData.totalSavings || '47.85' : '0.00',
+    totalTimeSaved: isDemoUser ? demoUserData.totalTimeSaved || 78 : 0,
+    totalRides: isDemoUser ? demoUserData.totalRides || 15 : 0,
+    name: isDemoUser ? demoUserData.name || 'Franco Presta' : '',
+    email: isDemoUser ? demoUserData.email || 'franco@example.com' : '',
+    phoneNumber: isDemoUser ? demoUserData.phoneNumber || '+1 (555) 123-4567' : '',
+    preferredPayment: isDemoUser ? demoUserData.preferredPayment || 'card' : 'card',
+    memberSince: isDemoUser ? demoUserData.memberSince || new Date().toISOString() : new Date().toISOString()
   };
 
   const safeAnalyticsData = analyticsData || {
-    totalSavings: 0,
-    priceSavings: 0,
-    luxurySavings: 0,
-    totalMinutesSaved: 0,
-    rideCount: 0,
+    totalSavings: isDemoUser ? 47.85 : 0,
+    priceSavings: isDemoUser ? 32.40 : 0,
+    luxurySavings: isDemoUser ? 15.45 : 0,
+    totalMinutesSaved: isDemoUser ? 78 : 0,
+    rideCount: isDemoUser ? 15 : 0,
     cumulativeData: []
   };
 
@@ -473,10 +477,15 @@ export default function Settings() {
               variant="outline" 
               className="w-full justify-start text-red-600 hover:text-red-700"
               onClick={() => {
-                // Clear demo user if exists
-                localStorage.removeItem('demoUser');
-                // Then redirect to logout or home
-                window.location.href = localStorage.getItem('demoUser') ? '/' : '/api/logout';
+                const isDemoUser = !!localStorage.getItem('demoUser');
+                if (isDemoUser) {
+                  // Clear demo user and redirect to home
+                  localStorage.removeItem('demoUser');
+                  window.location.href = '/';
+                } else {
+                  // Regular logout for authenticated users
+                  window.location.href = '/api/logout';
+                }
               }}
             >
               Sign Out
