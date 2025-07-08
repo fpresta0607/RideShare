@@ -30,5 +30,10 @@ export const api = {
   getRideHistory: async () => {
     const response = await apiRequest("GET", "/api/user/ride-history");
     return response.json();
+  },
+
+  getSavingsAnalytics: async (period: '3M' | '6M' | '1Y' | 'ALL' = 'ALL') => {
+    const response = await apiRequest("GET", `/api/user/savings-analytics?period=${period}`);
+    return response.json();
   }
 };

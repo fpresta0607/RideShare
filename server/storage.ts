@@ -120,6 +120,71 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(rideRequests).orderBy(sql`created_at DESC`).limit(20);
   }
 
+  async getSavingsAnalytics(period: '3M' | '6M' | '1Y' | 'ALL'): Promise<{
+    totalSavings: number;
+    priceSavings: number;
+    timeSavings: number;
+    luxurySavings: number;
+    totalMinutesSaved: number;
+    rideCount: number;
+  }> {
+    let dateFilter = '';
+    
+    switch (period) {
+      case '3M':
+        dateFilter = `AND created_at >= datetime('now', '-3 months')`;
+        break;
+      case '6M':
+        dateFilter = `AND created_at >= datetime('now', '-6 months')`;
+        break;
+      case '1Y':
+        dateFilter = `AND created_at >= datetime('now', '-1 year')`;
+        break;
+      case 'ALL':
+      default:
+        dateFilter = '';
+        break;
+    }
+
+    const rides = await db.select().from(rideRequests).where(
+      period === 'ALL' ? undefined : sql`created_at >= ${new Date(
+        Date.now() - (period === '3M' ? 90 : period === '6M' ? 180 : 365) * 24 * 60 * 60 * 1000
+      ).toISOString()}`
+    );
+
+    const analytics = rides.reduce((acc, ride) => {
+      const savings = parseFloat(ride.potentialSavings || '0');
+      const timeMinutes = ride.timeSavedMinutes || 0;
+      
+      acc.totalSavings += savings;
+      acc.rideCount += 1;
+      acc.totalMinutesSaved += timeMinutes;
+      
+      switch (ride.savingsType) {
+        case 'price':
+          acc.priceSavings += savings;
+          break;
+        case 'time':
+          acc.timeSavings += savings;
+          break;
+        case 'luxury':
+          acc.luxurySavings += savings;
+          break;
+      }
+      
+      return acc;
+    }, {
+      totalSavings: 0,
+      priceSavings: 0,
+      timeSavings: 0,
+      luxurySavings: 0,
+      totalMinutesSaved: 0,
+      rideCount: 0
+    });
+
+    return analytics;
+  }
+
   async seedUser(): Promise<void> {
     // Check if user already exists
     const existingUser = await db.select().from(users).limit(1);
@@ -139,47 +204,70 @@ export class DatabaseStorage implements IStorage {
 
     await db.insert(users).values(mockUser);
     
-    // Add some historical ride requests with realistic savings
+    // Add historical ride requests with realistic savings over different time periods
+    const now = new Date();
+    const threeMonthsAgo = new Date(now.getTime() - (90 * 24 * 60 * 60 * 1000));
+    const sixMonthsAgo = new Date(now.getTime() - (180 * 24 * 60 * 60 * 1000));
+    const oneYearAgo = new Date(now.getTime() - (365 * 24 * 60 * 60 * 1000));
+
     const mockRideHistory: InsertRideRequest[] = [
+      // Recent rides (last 3 months)
       {
         fromLocation: "Golden Gate Park, San Francisco, CA",
         toLocation: "San Francisco International Airport (SFO)",
         preference: "price",
-        selectedRideId: 2, // Lyft
+        selectedRideId: 2,
         recommendedRideId: 2,
-        potentialSavings: "4.50" // Saved $4.50 vs Uber
+        potentialSavings: "4.50",
+        savingsType: "price",
+        timeSavedMinutes: 0,
+        createdAt: new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000)).toISOString()
       },
       {
         fromLocation: "456 Market Street, San Francisco, CA",
         toLocation: "Fisherman's Wharf, San Francisco, CA",
         preference: "speed",
-        selectedRideId: 1, // Uber 
+        selectedRideId: 1,
         recommendedRideId: 1,
-        potentialSavings: "2.25" // Saved 3 min wait time worth ~$2.25
+        potentialSavings: "3.75",
+        savingsType: "time",
+        timeSavedMinutes: 5, // 5 minutes faster pickup
+        createdAt: new Date(now.getTime() - (15 * 24 * 60 * 60 * 1000)).toISOString()
       },
+      // 6 month old rides
       {
         fromLocation: "123 Main Street, San Francisco, CA",
         toLocation: "Union Square, San Francisco, CA",
         preference: "luxury",
-        selectedRideId: 8, // Lyft Lux
+        selectedRideId: 8,
         recommendedRideId: 8,
-        potentialSavings: "8.00" // Saved $8 vs Uber Black
+        potentialSavings: "8.00",
+        savingsType: "luxury",
+        timeSavedMinutes: 0,
+        createdAt: new Date(sixMonthsAgo.getTime() + (30 * 24 * 60 * 60 * 1000)).toISOString()
       },
       {
         fromLocation: "Lombard Street, San Francisco, CA",
         toLocation: "101 California Street, San Francisco, CA",
         preference: "price",
-        selectedRideId: 4, // Lyft
+        selectedRideId: 4,
         recommendedRideId: 4,
-        potentialSavings: "3.75" // Saved $3.75 vs Uber
+        potentialSavings: "3.25",
+        savingsType: "price",
+        timeSavedMinutes: 0,
+        createdAt: new Date(sixMonthsAgo.getTime() + (45 * 24 * 60 * 60 * 1000)).toISOString()
       },
+      // Older rides (1 year)
       {
         fromLocation: "Mission District, San Francisco, CA",
         toLocation: "Castro District, San Francisco, CA",
         preference: "speed",
-        selectedRideId: 3, // UberX
+        selectedRideId: 3,
         recommendedRideId: 3,
-        potentialSavings: "1.50" // Saved 2 min pickup time worth ~$1.50
+        potentialSavings: "2.25",
+        savingsType: "time",
+        timeSavedMinutes: 3, // 3 minutes faster
+        createdAt: new Date(oneYearAgo.getTime() + (60 * 24 * 60 * 60 * 1000)).toISOString()
       }
     ];
 

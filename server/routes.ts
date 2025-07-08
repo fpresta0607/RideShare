@@ -145,6 +145,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get savings analytics
+  app.get("/api/user/savings-analytics", async (req, res) => {
+    try {
+      const period = req.query.period as '3M' | '6M' | '1Y' | 'ALL' || 'ALL';
+      const analytics = await storage.getSavingsAnalytics(period);
+      res.json(analytics);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch savings analytics" });
+    }
+  });
+
   // Address autocomplete endpoint
   app.get("/api/addresses/search", async (req, res) => {
     try {

@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   User, 
   Mail, 
@@ -21,6 +23,8 @@ import type { User as UserType, RideRequest } from "@shared/schema";
 import { Link } from "wouter";
 
 export default function Settings() {
+  const [analyticsPeriod, setAnalyticsPeriod] = useState<'3M' | '6M' | '1Y' | 'ALL'>('ALL');
+
   const { data: user, isLoading: userLoading } = useQuery<UserType>({
     queryKey: ["/api/user/profile"],
     queryFn: api.getUserProfile,
@@ -29,6 +33,11 @@ export default function Settings() {
   const { data: rideHistory = [], isLoading: historyLoading } = useQuery<RideRequest[]>({
     queryKey: ["/api/user/ride-history"], 
     queryFn: api.getRideHistory,
+  });
+
+  const { data: analyticsData, isLoading: analyticsLoading } = useQuery({
+    queryKey: ["/api/user/savings-analytics", analyticsPeriod],
+    queryFn: () => api.getSavingsAnalytics(analyticsPeriod),
   });
 
   const formatDate = (dateString: string) => {
@@ -165,48 +174,80 @@ export default function Settings() {
           </CardContent>
         </Card>
 
-        {/* Accumulated Ride Savings */}
-        {user && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <DollarSign className="w-5 h-5" />
-                <span>Smart Choice Savings</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600 mb-2">
-                    ${calculateAccumulatedSavings().toFixed(2)}
-                  </div>
-                  <div className="text-sm text-gray-600 mb-3">
-                    Total accumulated savings
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    From choosing cheaper Lyft vs Uber options, faster pickup times, and better luxury deals
-                  </div>
-                </div>
+        {/* Savings Analytics */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <TrendingUp className="w-5 h-5" />
+              <span>Savings Analytics</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* Period Selector */}
+            <Tabs value={analyticsPeriod} onValueChange={setAnalyticsPeriod} className="mb-4">
+              <TabsList className="grid grid-cols-4 w-full">
+                <TabsTrigger value="3M">3M</TabsTrigger>
+                <TabsTrigger value="6M">6M</TabsTrigger>
+                <TabsTrigger value="1Y">1Y</TabsTrigger>
+                <TabsTrigger value="ALL">ALL</TabsTrigger>
+              </TabsList>
+            </Tabs>
+
+            {analyticsLoading ? (
+              <div className="space-y-3">
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-16 w-full" />
               </div>
-              
-              {/* Savings Breakdown */}
-              <div className="mt-4 space-y-2">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-600">💰 Price comparisons</span>
-                  <span className="font-medium text-green-600">$12.00</span>
+            ) : analyticsData ? (
+              <>
+                {/* Total Savings Display */}
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg mb-4">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-green-600 mb-2">
+                      ${analyticsData.totalSavings.toFixed(2)}
+                    </div>
+                    <div className="text-sm text-gray-600 mb-2">
+                      Total savings ({analyticsPeriod === 'ALL' ? 'All time' : analyticsPeriod})
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {analyticsData.totalMinutesSaved > 0 && (
+                        <span>{analyticsData.totalMinutesSaved} minutes saved • </span>
+                      )}
+                      {analyticsData.rideCount} rides analyzed
+                    </div>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-600">⚡ Time savings</span>
-                  <span className="font-medium text-blue-600">$3.75</span>
+                
+                {/* Savings Breakdown */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">💰 Price comparisons</span>
+                    <span className="font-medium text-green-600">
+                      ${analyticsData.priceSavings.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">⚡ Time savings</span>
+                    <span className="font-medium text-blue-600">
+                      ${analyticsData.timeSavings.toFixed(2)}
+                      {analyticsData.totalMinutesSaved > 0 && (
+                        <span className="text-gray-500 ml-1">
+                          ({analyticsData.totalMinutesSaved} min)
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">✨ Luxury deals</span>
+                    <span className="font-medium text-purple-600">
+                      ${analyticsData.luxurySavings.toFixed(2)}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-600">✨ Luxury deals</span>
-                  <span className="font-medium text-purple-600">$8.00</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+              </>
+            ) : null}
+          </CardContent>
+        </Card>
 
         {/* Recent Ride History */}
         <Card>

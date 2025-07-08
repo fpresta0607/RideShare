@@ -117,6 +117,7 @@ Changelog:
 - July 08, 2025. Improved luxury ranking to prioritize black/lux cars by lowest price, moved recommended badge to not cover pricing
 - July 08, 2025. Added comprehensive settings page with user profile, ride statistics, accumulated savings vs car ownership, and ride history
 - July 08, 2025. Updated savings calculation to track real ride comparison savings - cheaper Lyft vs Uber, time savings from faster pickups, and luxury deal differences
+- July 08, 2025. Enhanced savings analytics with time-based filtering (3M, 6M, 1Y, All time) and proper minute tracking for time savings calculations
 ```
 
 ## User Preferences
