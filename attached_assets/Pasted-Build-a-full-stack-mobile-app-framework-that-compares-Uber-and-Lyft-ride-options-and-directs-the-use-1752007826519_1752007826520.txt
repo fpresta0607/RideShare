@@ -1,0 +1,77 @@
+Build a full-stack mobile app framework that compares Uber and Lyft ride options and directs the user to the best ride choice based on price, ETA, and luxury level. The app should be architected with production deployment on the Apple App Store in mind, using React Native + Expo for the frontend and Node.js + Express for the backend hosted on Replit.
+
+---
+
+## 🔧 App Functionality Requirements:
+
+1. **User Authentication**
+   - Implement OAuth2 login for both Uber and Lyft using their respective developer APIs.
+   - Use secure token storage and proper callback handling via Replit-hosted backend routes.
+
+2. **Live Location + Destination Input**
+   - Use the mobile device’s GPS (via Expo Location API) to fetch the current location.
+   - Allow users to input a destination via a text field.
+   - Use Google Maps or Mapbox API to convert the destination address into latitude/longitude coordinates.
+
+3. **Ride Comparison Engine**
+   - Call Uber and Lyft APIs to retrieve:
+     - Available ride types (e.g., UberX, Lyft Lux)
+     - Estimated prices
+     - Estimated arrival times
+   - Return structured data showing a side-by-side comparison of rides from each service.
+
+4. **Preference Selection**
+   - Let the user choose whether they prioritize:
+     - Price
+     - Speed (ETA)
+     - Luxury
+   - Based on their preference, recommend a ride.
+
+5. **Action Routing**
+   - Once a ride is selected, use deep linking to open the corresponding app (Uber or Lyft) with pre-filled ride details.
+   - If the app is not installed, route them to the App Store.
+
+---
+
+## 🛠 Tech Stack:
+
+### Frontend:
+- Framework: **React Native + Expo**
+- Screens:
+  - LoginScreen.js
+  - HomeScreen.js (with location + destination input)
+  - ResultsScreen.js (ride comparisons + selection)
+- Components: LocationInput, RideOptionCard, RideComparisonTable, PreferenceSelector
+- API handling via Axios or Fetch
+- Built with EAS to allow deployment as `.ipa` to App Store
+
+### Backend (Replit):
+- Language: **Node.js with Express**
+- Routes:
+  - `/auth/uber/callback`
+  - `/auth/lyft/callback`
+  - `/rides/compare` (POST: { origin, destination })
+  - `/rides/deeplink` (POST: { service, rideType, coordinates })
+- Services:
+  - Uber API wrapper
+  - Lyft API wrapper
+  - Geocoding service (Google Maps or Mapbox)
+
+### Secrets:
+- Use Replit Secrets Manager to store API keys and client secrets securely.
+
+---
+
+## 🧪 Development Requirements:
+
+- Make the app mobile-first and touch-optimized.
+- Use placeholder/mock API responses if needed, but structure all logic and components so it can go live by simply replacing test data with real API keys.
+- Ensure backend is modular and can be swapped into a cloud platform later if scaling is needed.
+- Include clear comments and structure for each component, route, and file.
+
+---
+
+Final output should be:
+- A React Native + Expo frontend (ready to be compiled to .ipa)
+- A Replit-hosted backend (OAuth flows, API logic)
+- Integrated login, live comparison, deep linking, and location-based routing
