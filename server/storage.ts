@@ -156,7 +156,10 @@ export class DatabaseStorage implements IStorage {
       const savings = parseFloat(ride.potentialSavings || '0');
       const timeMinutes = ride.timeSavedMinutes || 0;
       
-      acc.totalSavings += savings;
+      // Only add actual monetary savings, not time value
+      if (ride.savingsType === 'price' || ride.savingsType === 'luxury') {
+        acc.totalSavings += savings;
+      }
       acc.rideCount += 1;
       acc.totalMinutesSaved += timeMinutes;
       
@@ -164,19 +167,16 @@ export class DatabaseStorage implements IStorage {
         case 'price':
           acc.priceSavings += savings;
           break;
-        case 'time':
-          acc.timeSavings += savings;
-          break;
         case 'luxury':
           acc.luxurySavings += savings;
           break;
+        // Removed time value savings as monetary value is subjective
       }
       
       return acc;
     }, {
       totalSavings: 0,
       priceSavings: 0,
-      timeSavings: 0,
       luxurySavings: 0,
       totalMinutesSaved: 0,
       rideCount: 0

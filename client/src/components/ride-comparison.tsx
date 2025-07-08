@@ -73,12 +73,12 @@ export default function RideComparison({ searchData }: RideComparisonProps) {
         return { savings: Math.max(0, maxPrice - recommendedPrice), minutes: 0 };
       }
     } else if (preference === "speed") {
-      // Compare ETA times and calculate time savings in minutes
+      // Compare ETA times and track time savings in minutes only
       const slowestEta = Math.max(...rides.map(r => r.eta || 0));
       const recommendedEta = recommendedRide.eta || 0;
       const minutesSaved = Math.max(0, slowestEta - recommendedEta);
-      // Value time at $0.75 per minute for cost calculation
-      return { savings: minutesSaved * 0.75, minutes: minutesSaved };
+      // Return only time saved, not monetary value (time value is subjective)
+      return { savings: 0, minutes: minutesSaved };
     } else if (preference === "luxury") {
       // Compare against other luxury options
       const luxuryRides = rides.filter(r => 

@@ -6,12 +6,22 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Settings from "@/pages/settings";
+import Landing from "@/pages/landing";
+import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
+  const { isAuthenticated, isLoading } = useAuth();
+
   return (
     <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/settings" component={Settings} />
+      {isLoading || !isAuthenticated ? (
+        <Route path="/" component={Landing} />
+      ) : (
+        <>
+          <Route path="/" component={Home} />
+          <Route path="/settings" component={Settings} />
+        </>
+      )}
       <Route component={NotFound} />
     </Switch>
   );

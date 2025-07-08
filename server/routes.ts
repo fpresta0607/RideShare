@@ -5,6 +5,27 @@ import { compareRidesSchema, insertRideRequestSchema, type AddressSuggestion } f
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Simple auth simulation routes
+  app.get("/api/auth/user", async (req, res) => {
+    // For demo purposes, return a mock user (in production this would check session/token)
+    try {
+      const user = await storage.getUserProfile();
+      res.json(user);
+    } catch (error) {
+      res.status(401).json({ message: "Unauthorized" });
+    }
+  });
+
+  app.get("/api/login", (req, res) => {
+    // For demo purposes, redirect to home (in production this would initiate OAuth)
+    res.redirect("/");
+  });
+
+  app.get("/api/logout", (req, res) => {
+    // For demo purposes, redirect to home (in production this would clear session)
+    res.redirect("/");
+  });
+
   // Get all available rides
   app.get("/api/rides", async (req, res) => {
     try {

@@ -308,19 +308,29 @@ export default function Settings() {
                 {/* Savings Breakdown */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-600">💰 Price comparisons</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-gray-600">💰 Price comparisons</span>
+                      <button 
+                        className="w-4 h-4 bg-gray-200 text-gray-600 rounded-full text-xs flex items-center justify-center hover:bg-gray-300"
+                        title="Savings from choosing the cheaper option between Uber and Lyft for the same trip"
+                      >
+                        ?
+                      </button>
+                    </div>
                     <span className="font-medium text-green-600">
                       ${analyticsData.priceSavings.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-600">⚡ Time value</span>
-                    <span className="font-medium text-purple-600">
-                      ${analyticsData.timeSavings.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-600">✨ Luxury deals</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-gray-600">✨ Luxury deals</span>
+                      <button 
+                        className="w-4 h-4 bg-gray-200 text-gray-600 rounded-full text-xs flex items-center justify-center hover:bg-gray-300"
+                        title="Savings from finding better priced luxury rides compared to similar premium options"
+                      >
+                        ?
+                      </button>
+                    </div>
                     <span className="font-medium text-amber-600">
                       ${analyticsData.luxurySavings.toFixed(2)}
                     </span>
