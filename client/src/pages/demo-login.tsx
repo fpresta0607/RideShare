@@ -26,10 +26,10 @@ export default function DemoLogin() {
         email: 'franco@example.com',
         phoneNumber: '+1 (555) 123-4567',
         preferredPayment: 'card',
-        totalSavings: '24.50',
-        totalTimeSaved: 35,
-        totalRides: 12,
-        memberSince: new Date().toISOString()
+        totalSavings: '47.85',
+        totalTimeSaved: 78,
+        totalRides: 15,
+        memberSince: new Date(Date.now() - 7776000000).toISOString() // 3 months ago
       }));
       
       // Redirect to home page

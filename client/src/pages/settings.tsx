@@ -24,7 +24,7 @@ import { Link } from "wouter";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 
 export default function Settings() {
-  const [analyticsPeriod, setAnalyticsPeriod] = useState<'3M' | '6M' | '1Y' | 'ALL'>('ALL');
+  const [analyticsPeriod, setAnalyticsPeriod] = useState<'3D' | '1W' | '3M' | '6M' | '1Y' | 'ALL'>('ALL');
 
   // Generate time series data for the savings chart
   const generateTimeSeriesData = (analyticsData: any, period: string) => {
@@ -33,6 +33,8 @@ export default function Settings() {
     
     // Determine the number of data points based on period
     const periodConfig = {
+      '3D': { months: 0.1, points: 7 },
+      '1W': { months: 0.25, points: 7 },
       '3M': { months: 3, points: 12 },
       '6M': { months: 6, points: 24 },
       '1Y': { months: 12, points: 52 },
@@ -45,15 +47,43 @@ export default function Settings() {
     // Generate cumulative savings data points
     for (let i = pointsCount - 1; i >= 0; i--) {
       const date = new Date(now);
-      date.setDate(date.getDate() - (i * (config.months * 30) / pointsCount));
       
-      // Simulate progressive savings growth
+      // Calculate days back based on period
+      let daysBack;
+      if (period === '3D') {
+        daysBack = (i * 3) / pointsCount;
+      } else if (period === '1W') {
+        daysBack = (i * 7) / pointsCount;
+      } else {
+        daysBack = (i * (config.months * 30)) / pointsCount;
+      }
+      
+      date.setDate(date.getDate() - daysBack);
+      
+      // Simulate progressive savings growth with realistic patterns
       const progress = (pointsCount - i) / pointsCount;
-      const totalSavings = analyticsData?.totalSavings || 20;
-      const savings = Math.max(0, totalSavings * progress + (Math.random() - 0.5) * 2);
+      const totalSavings = analyticsData?.totalSavings || 47.85;
+      const baseGrowth = totalSavings * progress;
+      
+      // Add some realistic variance based on ride frequency
+      const variance = period === '3D' || period === '1W' ? 
+        Math.sin(progress * Math.PI * 2) * 2 : // Daily fluctuations
+        (Math.random() - 0.5) * 3; // Longer term variance
+      
+      const savings = Math.max(0, baseGrowth + variance);
+      
+      // Format date based on period
+      let dateLabel;
+      if (period === '3D') {
+        dateLabel = date.toLocaleDateString('en-US', { weekday: 'short' });
+      } else if (period === '1W') {
+        dateLabel = date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
+      } else {
+        dateLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }
       
       dataPoints.push({
-        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        date: dateLabel,
         savings: Math.round(savings * 100) / 100
       });
     }
@@ -241,8 +271,8 @@ export default function Settings() {
                 <DollarSign className="w-5 h-5" />
                 <span>Savings Analytics</span>
               </div>
-              <div className="flex space-x-1">
-                {(['3M', '6M', '1Y', 'ALL'] as const).map((period) => (
+              <div className="flex space-x-1 flex-wrap">
+                {(['3D', '1W', '3M', '6M', '1Y', 'ALL'] as const).map((period) => (
                   <Button
                     key={period}
                     variant={analyticsPeriod === period ? "default" : "ghost"}

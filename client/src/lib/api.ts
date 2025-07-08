@@ -58,6 +58,41 @@ export const api = {
           toLocation: "Nob Hill", 
           preference: "luxury",
           createdAt: new Date(Date.now() - 259200000).toISOString(),
+        },
+        {
+          id: 4,
+          fromLocation: "Marina District",
+          toLocation: "SOMA",
+          preference: "price",
+          createdAt: new Date(Date.now() - 345600000).toISOString(),
+        },
+        {
+          id: 5,
+          fromLocation: "Hayes Valley",
+          toLocation: "Oakland Airport",
+          preference: "speed",
+          createdAt: new Date(Date.now() - 432000000).toISOString(),
+        },
+        {
+          id: 6,
+          fromLocation: "Financial District",
+          toLocation: "Presidio",
+          preference: "luxury",
+          createdAt: new Date(Date.now() - 518400000).toISOString(),
+        },
+        {
+          id: 7,
+          fromLocation: "Chinatown",
+          toLocation: "Golden Gate Park",
+          preference: "price",
+          createdAt: new Date(Date.now() - 604800000).toISOString(),
+        },
+        {
+          id: 8,
+          fromLocation: "Richmond",
+          toLocation: "Downtown",
+          preference: "speed",
+          createdAt: new Date(Date.now() - 1209600000).toISOString(),
         }
       ];
     }
@@ -66,16 +101,16 @@ export const api = {
     return response.json();
   },
 
-  getSavingsAnalytics: async (period: '3M' | '6M' | '1Y' | 'ALL' = 'ALL') => {
+  getSavingsAnalytics: async (period: '3D' | '1W' | '3M' | '6M' | '1Y' | 'ALL' = 'ALL') => {
     // Return demo analytics for demo users
     const demoUser = localStorage.getItem('demoUser');
     if (demoUser) {
       return {
-        totalSavings: 24.50,
-        priceSavings: 18.75,
-        luxurySavings: 5.75,
-        totalMinutesSaved: 35,
-        rideCount: 12,
+        totalSavings: 47.85,
+        priceSavings: 32.40,
+        luxurySavings: 15.45,
+        totalMinutesSaved: 78,
+        rideCount: 15,
         cumulativeData: []
       };
     }
