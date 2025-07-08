@@ -26,7 +26,7 @@ export const api = {
     // Check for demo user first
     const demoUser = localStorage.getItem('demoUser');
     if (demoUser) {
-      return JSON.parse(demoUser);
+      return Promise.resolve(JSON.parse(demoUser));
     }
     
     const response = await apiRequest("GET", "/api/user/profile");
@@ -37,7 +37,7 @@ export const api = {
     // Return demo data for demo users
     const demoUser = localStorage.getItem('demoUser');
     if (demoUser) {
-      return [
+      return Promise.resolve([
         {
           id: 1,
           fromLocation: "Union Square",
@@ -94,7 +94,7 @@ export const api = {
           preference: "speed",
           createdAt: new Date(Date.now() - 1209600000).toISOString(),
         }
-      ];
+      ]);
     }
     
     const response = await apiRequest("GET", "/api/user/ride-history");
