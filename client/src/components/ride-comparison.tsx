@@ -63,20 +63,20 @@ export default function RideComparison({ searchData }: RideComparisonProps) {
   // Calculate potential savings for recommended ride vs alternatives
   const calculateSavings = () => {
     const preference = tripInfo.preference;
-    const recommendedPrice = parseFloat(recommendedRide.price.replace('$', ''));
+    const recommendedPrice = parseFloat(String(recommendedRide.price).replace('$', ''));
     
     if (preference === "price") {
       // Compare against most expensive alternative from other platform
-      const otherPlatformRides = rides.filter(r => r.platform !== recommendedRide.platform);
+      const otherPlatformRides = rides.filter(r => r.service !== recommendedRide.service);
       if (otherPlatformRides.length > 0) {
-        const maxPrice = Math.max(...otherPlatformRides.map(r => parseFloat(r.price.replace('$', ''))));
+        const maxPrice = Math.max(...otherPlatformRides.map(r => parseFloat(String(r.price).replace('$', ''))));
         return { savings: Math.max(0, maxPrice - recommendedPrice), minutes: 0 };
       }
     } else if (preference === "speed") {
-      // Compare pickup times and calculate time savings in minutes
-      const slowestPickup = Math.max(...rides.map(r => parseInt(r.pickup.replace(' min', ''))));
-      const recommendedPickup = parseInt(recommendedRide.pickup.replace(' min', ''));
-      const minutesSaved = Math.max(0, slowestPickup - recommendedPickup);
+      // Compare ETA times and calculate time savings in minutes
+      const slowestEta = Math.max(...rides.map(r => r.eta || 0));
+      const recommendedEta = recommendedRide.eta || 0;
+      const minutesSaved = Math.max(0, slowestEta - recommendedEta);
       // Value time at $0.75 per minute for cost calculation
       return { savings: minutesSaved * 0.75, minutes: minutesSaved };
     } else if (preference === "luxury") {
@@ -86,10 +86,10 @@ export default function RideComparison({ searchData }: RideComparisonProps) {
         (r.name?.toLowerCase().includes('black') || 
          r.name?.toLowerCase().includes('lux') || 
          r.name?.toLowerCase().includes('xl') ||
-         r.luxuryLevel >= 4)
+         (r.luxuryLevel || 0) >= 4)
       );
       if (luxuryRides.length > 0) {
-        const maxLuxuryPrice = Math.max(...luxuryRides.map(r => parseFloat(r.price.replace('$', ''))));
+        const maxLuxuryPrice = Math.max(...luxuryRides.map(r => parseFloat(String(r.price).replace('$', ''))));
         return { savings: Math.max(0, maxLuxuryPrice - recommendedPrice), minutes: 0 };
       }
     }
@@ -107,22 +107,22 @@ export default function RideComparison({ searchData }: RideComparisonProps) {
     // Then sort by preference
     switch (tripInfo.preference) {
       case 'price':
-        return parseFloat(a.price) - parseFloat(b.price);
+        return parseFloat(String(a.price)) - parseFloat(String(b.price));
       case 'speed':
-        return a.eta - b.eta;
+        return (a.eta || 0) - (b.eta || 0);
       case 'luxury':
         // For luxury, prioritize high luxury level (4-5) cars, then by lowest price
-        const aIsLuxury = a.luxuryLevel >= 4;
-        const bIsLuxury = b.luxuryLevel >= 4;
+        const aIsLuxury = (a.luxuryLevel || 0) >= 4;
+        const bIsLuxury = (b.luxuryLevel || 0) >= 4;
         
         if (aIsLuxury && !bIsLuxury) return -1;
         if (!aIsLuxury && bIsLuxury) return 1;
         if (aIsLuxury && bIsLuxury) {
           // Both are luxury, sort by price
-          return parseFloat(a.price) - parseFloat(b.price);
+          return parseFloat(String(a.price)) - parseFloat(String(b.price));
         }
         // Neither is luxury, sort by luxury level
-        return b.luxuryLevel - a.luxuryLevel;
+        return (b.luxuryLevel || 0) - (a.luxuryLevel || 0);
       default:
         return 0;
     }

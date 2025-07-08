@@ -54,7 +54,7 @@ export default function RideModal({ ride, isOpen, onClose }: RideModalProps) {
     onClose();
   };
 
-  const isLuxury = ride.luxuryLevel >= 4;
+  const isLuxury = (ride.luxuryLevel || 0) >= 4;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -73,7 +73,7 @@ export default function RideModal({ ride, isOpen, onClose }: RideModalProps) {
                 <div className="flex items-center space-x-2 mb-1">
                   <h4 className="font-semibold text-gray-900">{ride.name}</h4>
                   <Badge variant="secondary" className="text-xs">
-                    {ride.seats} seats
+                    {ride.seats || 4} seats
                   </Badge>
                   {isLuxury && (
                     <Badge className="bg-amber-100 text-amber-700 text-xs">
@@ -84,7 +84,7 @@ export default function RideModal({ ride, isOpen, onClose }: RideModalProps) {
                 <p className="text-sm text-gray-600">{ride.description}</p>
               </div>
               <div className="text-right">
-                <div className="text-lg font-bold text-gray-900">${ride.price}</div>
+                <div className="text-lg font-bold text-gray-900">${ride.price || '0.00'}</div>
                 <div className="text-sm text-gray-500">Est. total</div>
               </div>
             </div>
@@ -95,7 +95,7 @@ export default function RideModal({ ride, isOpen, onClose }: RideModalProps) {
               <span className="text-gray-600">Pickup time</span>
               <div className="flex items-center space-x-1">
                 <Clock className="w-4 h-4 text-gray-400" />
-                <span className="font-medium">{ride.eta} min</span>
+                <span className="font-medium">{ride.eta || 0} min</span>
               </div>
             </div>
             <div className="flex items-center justify-between text-sm">
@@ -104,7 +104,7 @@ export default function RideModal({ ride, isOpen, onClose }: RideModalProps) {
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-600">Service</span>
-              <span className="font-medium capitalize">{ride.service}</span>
+              <span className="font-medium capitalize">{ride.service || 'ride'}</span>
             </div>
           </div>
 

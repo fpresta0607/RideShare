@@ -12,7 +12,7 @@ interface RideCardProps {
 export default function RideCard({ ride, isRecommended = false }: RideCardProps) {
   const [showModal, setShowModal] = useState(false);
 
-  const isLuxury = ride.luxuryLevel >= 4;
+  const isLuxury = (ride.luxuryLevel || 0) >= 4;
 
   return (
     <>
@@ -38,7 +38,7 @@ export default function RideCard({ ride, isRecommended = false }: RideCardProps)
                   </Badge>
                 )}
                 <Badge variant="secondary" className="text-xs">
-                  {ride.seats} seats
+                  {ride.seats || 4} seats
                 </Badge>
                 {isLuxury && (
                   <Badge className="bg-amber-100 text-amber-700 text-xs">
@@ -49,12 +49,12 @@ export default function RideCard({ ride, isRecommended = false }: RideCardProps)
               <p className="text-sm text-gray-600">{ride.description}</p>
               <div className="flex items-center space-x-2 mt-1">
                 <Clock className="w-4 h-4 text-gray-400" />
-                <span className="text-sm text-gray-600">{ride.eta} min</span>
+                <span className="text-sm text-gray-600">{ride.eta || 0} min</span>
               </div>
             </div>
           </div>
           <div className="text-right">
-            <div className="text-xl font-bold text-gray-900">${ride.price}</div>
+            <div className="text-xl font-bold text-gray-900">${ride.price || '0.00'}</div>
             <div className="text-sm text-gray-500">Est. total</div>
           </div>
         </div>
