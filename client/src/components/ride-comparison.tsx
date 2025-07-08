@@ -82,10 +82,11 @@ export default function RideComparison({ searchData }: RideComparisonProps) {
     } else if (preference === "luxury") {
       // Compare against other luxury options
       const luxuryRides = rides.filter(r => 
-        (r.type.toLowerCase().includes('black') || 
-         r.type.toLowerCase().includes('lux') || 
-         r.type.toLowerCase().includes('xl')) &&
-        r.id !== recommendedRide.id
+        r.id !== recommendedRide.id &&
+        (r.name?.toLowerCase().includes('black') || 
+         r.name?.toLowerCase().includes('lux') || 
+         r.name?.toLowerCase().includes('xl') ||
+         r.luxuryLevel >= 4)
       );
       if (luxuryRides.length > 0) {
         const maxLuxuryPrice = Math.max(...luxuryRides.map(r => parseFloat(r.price.replace('$', ''))));
