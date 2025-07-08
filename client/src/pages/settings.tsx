@@ -255,7 +255,7 @@ export default function Settings() {
                       <span className="text-sm font-medium text-purple-800">Time Savings</span>
                     </div>
                     <div className="text-2xl font-bold text-purple-900 mt-2">
-                      {analyticsData.totalMinutesSaved.toFixed(0)} min
+                      {userProfile?.totalTimeSaved || 0} min
                     </div>
                     <div className="text-xs text-purple-600 mt-1">
                       Faster pickup times
@@ -333,6 +333,20 @@ export default function Settings() {
                     </div>
                     <span className="font-medium text-amber-600">
                       ${analyticsData.luxurySavings.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-gray-600">⚡ Time saved</span>
+                      <button 
+                        className="w-4 h-4 bg-gray-200 text-gray-600 rounded-full text-xs flex items-center justify-center hover:bg-gray-300"
+                        title="Minutes saved by choosing rides with faster pickup times"
+                      >
+                        ?
+                      </button>
+                    </div>
+                    <span className="font-medium text-blue-600">
+                      {analyticsData.totalMinutesSaved} min
                     </span>
                   </div>
                 </div>

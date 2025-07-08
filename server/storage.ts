@@ -22,7 +22,28 @@ export class DatabaseStorage implements IStorage {
       .insert(rideRequests)
       .values(request)
       .returning();
+    
+    // Update user totals when ride request is created
+    await this.updateUserTotals(rideRequest);
+    
     return rideRequest;
+  }
+
+  private async updateUserTotals(rideRequest: RideRequest): Promise<void> {
+    const user = await this.getUserProfile();
+    if (!user) return;
+
+    const savings = parseFloat(rideRequest.potentialSavings || '0');
+    const timeSaved = rideRequest.timeSavedMinutes || 0;
+    
+    // Update user totals
+    await db.update(users)
+      .set({
+        totalRides: user.totalRides + 1,
+        totalSavings: (parseFloat(user.totalSavings || '0') + savings).toFixed(2),
+        totalTimeSaved: (user.totalTimeSaved || 0) + timeSaved,
+      })
+      .where(eq(users.id, user.id));
   }
 
   async getRideById(id: number): Promise<Ride | undefined> {
@@ -156,7 +177,7 @@ export class DatabaseStorage implements IStorage {
       const savings = parseFloat(ride.potentialSavings || '0');
       const timeMinutes = ride.timeSavedMinutes || 0;
       
-      // Only add actual monetary savings, not time value
+      // Add all monetary savings to total
       if (ride.savingsType === 'price' || ride.savingsType === 'luxury') {
         acc.totalSavings += savings;
       }
@@ -182,7 +203,28 @@ export class DatabaseStorage implements IStorage {
       rideCount: 0
     });
 
-    return analytics;
+    // Add cumulative savings data points for chart
+    const cumulativeData = rides
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+      .reduce((acc, ride, index) => {
+        const savings = parseFloat(ride.potentialSavings || '0');
+        const previousTotal = index === 0 ? 0 : acc[index - 1].total;
+        
+        // Count monetary savings for cumulative chart
+        const monetarySavings = (ride.savingsType === 'price' || ride.savingsType === 'luxury') ? savings : 0;
+        
+        acc.push({
+          date: ride.createdAt,
+          total: previousTotal + monetarySavings,
+          ride: `${ride.fromLocation} → ${ride.toLocation}`,
+        });
+        return acc;
+      }, [] as Array<{ date: string; total: number; ride: string }>);
+
+    return {
+      ...analytics,
+      cumulativeData,
+    };
   }
 
   async seedUser(): Promise<void> {
@@ -199,7 +241,8 @@ export class DatabaseStorage implements IStorage {
       preferredPayment: "card",
       totalRides: 47,
       totalSpent: "892.45",
-      totalSavings: "20.00"
+      totalSavings: "20.00",
+      totalTimeSaved: 89
     };
 
     await db.insert(users).values(mockUser);

@@ -38,6 +38,7 @@ export const users = pgTable("users", {
   totalRides: integer("total_rides").default(0),
   totalSpent: text("total_spent").default("0.00"),
   totalSavings: text("total_savings").default("0.00"),
+  totalTimeSaved: integer("total_time_saved").default(0), // total minutes saved
   memberSince: text("member_since").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
