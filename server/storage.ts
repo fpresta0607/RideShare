@@ -134,37 +134,52 @@ export class DatabaseStorage implements IStorage {
       preferredPayment: "card",
       totalRides: 47,
       totalSpent: "892.45",
-      totalSavings: "3247.80"
+      totalSavings: "20.00"
     };
 
     await db.insert(users).values(mockUser);
     
-    // Add some historical ride requests
+    // Add some historical ride requests with realistic savings
     const mockRideHistory: InsertRideRequest[] = [
       {
         fromLocation: "Golden Gate Park, San Francisco, CA",
         toLocation: "San Francisco International Airport (SFO)",
-        preference: "price"
+        preference: "price",
+        selectedRideId: 2, // Lyft
+        recommendedRideId: 2,
+        potentialSavings: "4.50" // Saved $4.50 vs Uber
       },
       {
         fromLocation: "456 Market Street, San Francisco, CA",
         toLocation: "Fisherman's Wharf, San Francisco, CA",
-        preference: "speed"
+        preference: "speed",
+        selectedRideId: 1, // Uber 
+        recommendedRideId: 1,
+        potentialSavings: "2.25" // Saved 3 min wait time worth ~$2.25
       },
       {
         fromLocation: "123 Main Street, San Francisco, CA",
         toLocation: "Union Square, San Francisco, CA",
-        preference: "luxury"
+        preference: "luxury",
+        selectedRideId: 8, // Lyft Lux
+        recommendedRideId: 8,
+        potentialSavings: "8.00" // Saved $8 vs Uber Black
       },
       {
         fromLocation: "Lombard Street, San Francisco, CA",
         toLocation: "101 California Street, San Francisco, CA",
-        preference: "price"
+        preference: "price",
+        selectedRideId: 4, // Lyft
+        recommendedRideId: 4,
+        potentialSavings: "3.75" // Saved $3.75 vs Uber
       },
       {
         fromLocation: "Mission District, San Francisco, CA",
         toLocation: "Castro District, San Francisco, CA",
-        preference: "speed"
+        preference: "speed",
+        selectedRideId: 3, // UberX
+        recommendedRideId: 3,
+        potentialSavings: "1.50" // Saved 2 min pickup time worth ~$1.50
       }
     ];
 

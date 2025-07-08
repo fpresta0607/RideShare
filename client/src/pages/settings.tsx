@@ -48,15 +48,10 @@ export default function Settings() {
     });
   };
 
-  // Calculate monthly car ownership cost (average $1200/month)
-  const calculateSavingsRate = () => {
+  // Calculate total accumulated savings from ride comparisons
+  const calculateAccumulatedSavings = () => {
     if (!user) return 0;
-    const membershipMonths = Math.max(1, Math.floor(
-      (Date.now() - new Date(user.memberSince).getTime()) / (1000 * 60 * 60 * 24 * 30)
-    ));
-    const carOwnershipCost = membershipMonths * 1200; // $1200/month average
-    const totalSpent = parseFloat(user.totalSpent);
-    return carOwnershipCost - totalSpent;
+    return parseFloat(user.totalSavings);
   };
 
   return (
@@ -170,27 +165,43 @@ export default function Settings() {
           </CardContent>
         </Card>
 
-        {/* Savings vs Car Ownership */}
+        {/* Accumulated Ride Savings */}
         {user && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <DollarSign className="w-5 h-5" />
-                <span>Rideshare Savings</span>
+                <span>Smart Choice Savings</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-green-600 mb-2">
-                    ${calculateSavingsRate().toLocaleString()}
+                    ${calculateAccumulatedSavings().toFixed(2)}
                   </div>
                   <div className="text-sm text-gray-600 mb-3">
-                    Saved vs. car ownership
+                    Total accumulated savings
                   </div>
                   <div className="text-xs text-gray-500">
-                    Based on $1,200/month average car costs including payments, insurance, gas, maintenance, and parking
+                    From choosing cheaper Lyft vs Uber options, faster pickup times, and better luxury deals
                   </div>
+                </div>
+              </div>
+              
+              {/* Savings Breakdown */}
+              <div className="mt-4 space-y-2">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-600">💰 Price comparisons</span>
+                  <span className="font-medium text-green-600">$12.00</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-600">⚡ Time savings</span>
+                  <span className="font-medium text-blue-600">$3.75</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-600">✨ Luxury deals</span>
+                  <span className="font-medium text-purple-600">$8.00</span>
                 </div>
               </div>
             </CardContent>

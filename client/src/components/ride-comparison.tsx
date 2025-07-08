@@ -59,6 +59,42 @@ export default function RideComparison({ searchData }: RideComparisonProps) {
   if (!data) return null;
 
   const { rides, recommendedRide, tripInfo } = data;
+
+  // Calculate potential savings for recommended ride vs alternatives
+  const calculateSavings = () => {
+    const preference = tripInfo.preference;
+    const recommendedPrice = parseFloat(recommendedRide.price.replace('$', ''));
+    
+    if (preference === "price") {
+      // Compare against most expensive alternative from other platform
+      const otherPlatformRides = rides.filter(r => r.platform !== recommendedRide.platform);
+      if (otherPlatformRides.length > 0) {
+        const maxPrice = Math.max(...otherPlatformRides.map(r => parseFloat(r.price.replace('$', ''))));
+        return Math.max(0, maxPrice - recommendedPrice);
+      }
+    } else if (preference === "speed") {
+      // Compare pickup times and value time savings
+      const slowestPickup = Math.max(...rides.map(r => parseInt(r.pickup.replace(' min', ''))));
+      const recommendedPickup = parseInt(recommendedRide.pickup.replace(' min', ''));
+      const timeSaved = slowestPickup - recommendedPickup;
+      return timeSaved > 0 ? timeSaved * 0.75 : 0; // $0.75 per minute saved
+    } else if (preference === "luxury") {
+      // Compare against other luxury options
+      const luxuryRides = rides.filter(r => 
+        (r.type.toLowerCase().includes('black') || 
+         r.type.toLowerCase().includes('lux') || 
+         r.type.toLowerCase().includes('xl')) &&
+        r.id !== recommendedRide.id
+      );
+      if (luxuryRides.length > 0) {
+        const maxLuxuryPrice = Math.max(...luxuryRides.map(r => parseFloat(r.price.replace('$', ''))));
+        return Math.max(0, maxLuxuryPrice - recommendedPrice);
+      }
+    }
+    return 0;
+  };
+
+  const potentialSavings = calculateSavings();
   
   // Sort rides with recommended at the top, then by the user's preference
   const sortedRides = [...rides].sort((a, b) => {
@@ -97,13 +133,22 @@ export default function RideComparison({ searchData }: RideComparisonProps) {
         <div className="text-sm text-gray-500">{tripInfo.estimatedDuration} trip</div>
       </div>
 
-      {/* Preference indicator */}
+      {/* Preference indicator and savings */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-        <div className="flex items-center space-x-2">
-          <CheckCircle className="w-5 h-5 text-blue-600" />
-          <span className="text-sm font-medium text-blue-800">
-            Sorted by {tripInfo.preference === 'speed' ? 'fastest pickup' : tripInfo.preference === 'luxury' ? 'luxury level' : 'best price'}
-          </span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <CheckCircle className="w-5 h-5 text-blue-600" />
+            <span className="text-sm font-medium text-blue-800">
+              Sorted by {tripInfo.preference === 'speed' ? 'fastest pickup' : tripInfo.preference === 'luxury' ? 'luxury level' : 'best price'}
+            </span>
+          </div>
+          {potentialSavings > 0 && (
+            <div className="flex items-center space-x-1 bg-green-100 px-2 py-1 rounded-full">
+              <span className="text-xs font-medium text-green-700">
+                Save ${potentialSavings.toFixed(2)}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 

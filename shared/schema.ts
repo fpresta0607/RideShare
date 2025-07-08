@@ -21,6 +21,9 @@ export const rideRequests = pgTable("ride_requests", {
   fromLocation: text("from_location").notNull(),
   toLocation: text("to_location").notNull(),
   preference: text("preference").notNull(), // 'price', 'speed', 'luxury'
+  selectedRideId: integer("selected_ride_id"),
+  recommendedRideId: integer("recommended_ride_id"),
+  potentialSavings: text("potential_savings").default("0.00"),
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
