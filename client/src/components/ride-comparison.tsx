@@ -164,6 +164,13 @@ export default function RideComparison({ searchData }: RideComparisonProps) {
           />
         ))}
       </div>
+      
+      {/* Additional booking help */}
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mt-4">
+        <p className="text-xs text-gray-600 text-center">
+          💡 Tap any ride to see details and book directly with the app
+        </p>
+      </div>
     </section>
   );
 }

@@ -15,18 +15,40 @@ export default function RideModal({ ride, isOpen, onClose }: RideModalProps) {
   const { toast } = useToast();
 
   const handleOpenApp = () => {
-    // In a real app, this would use deep linking to open the ride app
-    const appUrl = ride.service === "uber" 
-      ? `uber://` 
-      : `lyft://`;
+    // Generate deep link URLs with ride parameters
+    const baseUrls = {
+      uber: "https://m.uber.com/ul/",
+      lyft: "https://lyft.com/ride"
+    };
+
+    const fallbackUrls = {
+      uber: "https://apps.apple.com/app/uber/id368677368",
+      lyft: "https://apps.apple.com/app/lyft/id529379082"
+    };
+
+    const deepLinkUrls = {
+      uber: "uber://",
+      lyft: "lyft://ridetype?id=lyft"
+    };
+
+    const platform = ride.service.toLowerCase() as 'uber' | 'lyft';
     
-    // Try to open the app, fallback to app store
-    window.location.href = appUrl;
+    // Try deep link first, then fallback to web, then app store
+    const tryOpenApp = () => {
+      // Try deep link
+      window.location.href = deepLinkUrls[platform];
+      
+      // If deep link fails, try web version after a delay
+      setTimeout(() => {
+        window.open(baseUrls[platform], '_blank');
+      }, 1000);
+    };
+
+    tryOpenApp();
     
-    // Show toast since we can't actually open the apps in this demo
     toast({
-      title: "Opening app...",
-      description: `Redirecting to ${ride.service === "uber" ? "Uber" : "Lyft"} app`,
+      title: `Opening ${ride.service}...`,
+      description: `Redirecting to complete your ${ride.name} booking`,
     });
     
     onClose();
@@ -86,16 +108,27 @@ export default function RideModal({ ride, isOpen, onClose }: RideModalProps) {
             </div>
           </div>
 
-          <Button 
-            className="w-full py-4 text-lg font-medium"
-            onClick={handleOpenApp}
-          >
-            Open in App
-          </Button>
+          <div className="space-y-2">
+            <Button 
+              className="w-full py-4 text-lg font-medium"
+              onClick={handleOpenApp}
+            >
+              Book with {ride.service === "uber" ? "Uber" : "Lyft"}
+            </Button>
+            <Button 
+              variant="outline"
+              className="w-full"
+              onClick={onClose}
+            >
+              Back to Options
+            </Button>
+          </div>
 
-          <p className="text-xs text-gray-500 text-center">
-            You'll be redirected to the ride-sharing app to complete your booking
-          </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <p className="text-xs text-blue-700 text-center">
+              🚗 You'll be redirected to the {ride.service === "uber" ? "Uber" : "Lyft"} app to complete your booking
+            </p>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

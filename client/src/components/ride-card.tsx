@@ -21,7 +21,7 @@ export default function RideCard({ ride, isRecommended = false }: RideCardProps)
           isRecommended 
             ? "border-2 border-green-500 shadow-md" 
             : "border border-gray-200 hover:border-gray-300"
-        }`}
+        } active:scale-95`}
         onClick={() => setShowModal(true)}
       >
         <div className="flex items-center justify-between">
