@@ -115,6 +115,7 @@ Changelog:
 - July 08, 2025. Added address autocomplete functionality with mock geocoding service for development
 - July 08, 2025. Migrated from in-memory storage to PostgreSQL database with Drizzle ORM
 - July 08, 2025. Improved luxury ranking to prioritize black/lux cars by lowest price, moved recommended badge to not cover pricing
+- July 08, 2025. Added comprehensive settings page with user profile, ride statistics, accumulated savings vs car ownership, and ride history
 ```
 
 ## User Preferences

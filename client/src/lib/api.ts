@@ -20,5 +20,15 @@ export const api = {
   searchAddresses: async (query: string): Promise<AddressSuggestion[]> => {
     const response = await apiRequest("GET", `/api/addresses/search?q=${encodeURIComponent(query)}`);
     return response.json();
+  },
+
+  getUserProfile: async () => {
+    const response = await apiRequest("GET", "/api/user/profile");
+    return response.json();
+  },
+
+  getRideHistory: async () => {
+    const response = await apiRequest("GET", "/api/user/ride-history");
+    return response.json();
   }
 };

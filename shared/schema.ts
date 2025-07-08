@@ -1,4 +1,5 @@
 import { pgTable, text, serial, decimal, integer } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -20,10 +21,24 @@ export const rideRequests = pgTable("ride_requests", {
   fromLocation: text("from_location").notNull(),
   toLocation: text("to_location").notNull(),
   preference: text("preference").notNull(), // 'price', 'speed', 'luxury'
+  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  phoneNumber: text("phone_number"),
+  preferredPayment: text("preferred_payment").default("card"),
+  totalRides: integer("total_rides").default(0),
+  totalSpent: text("total_spent").default("0.00"),
+  totalSavings: text("total_savings").default("0.00"),
+  memberSince: text("member_since").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const insertRideSchema = createInsertSchema(rides).omit({ id: true });
-export const insertRideRequestSchema = createInsertSchema(rideRequests).omit({ id: true });
+export const insertRideRequestSchema = createInsertSchema(rideRequests).omit({ id: true, createdAt: true });
+export const insertUserSchema = createInsertSchema(users).omit({ id: true, memberSince: true });
 
 export const compareRidesSchema = z.object({
   fromLocation: z.string().min(1, "Origin location is required"),
@@ -45,5 +60,7 @@ export type Ride = typeof rides.$inferSelect;
 export type InsertRide = z.infer<typeof insertRideSchema>;
 export type RideRequest = typeof rideRequests.$inferSelect;
 export type InsertRideRequest = z.infer<typeof insertRideRequestSchema>;
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
 export type CompareRidesRequest = z.infer<typeof compareRidesSchema>;
 export type AddressSuggestion = z.infer<typeof addressSuggestionSchema>;

@@ -122,6 +122,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user profile
+  app.get("/api/user/profile", async (req, res) => {
+    try {
+      const user = await storage.getUserProfile();
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch user profile" });
+    }
+  });
+
+  // Get ride history
+  app.get("/api/user/ride-history", async (req, res) => {
+    try {
+      const rideHistory = await storage.getRideHistory();
+      res.json(rideHistory);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch ride history" });
+    }
+  });
+
   // Address autocomplete endpoint
   app.get("/api/addresses/search", async (req, res) => {
     try {

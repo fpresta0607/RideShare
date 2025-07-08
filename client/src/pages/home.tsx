@@ -6,6 +6,7 @@ import LocationInput from "@/components/location-input";
 import PreferenceSelector from "@/components/preference-selector";
 import RideComparison from "@/components/ride-comparison";
 import type { CompareRidesRequest } from "@shared/schema";
+import { Link } from "wouter";
 
 export default function Home() {
   const [searchData, setSearchData] = useState<CompareRidesRequest | null>(null);
@@ -29,9 +30,11 @@ export default function Home() {
         <div className="max-w-md mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold text-gray-900">RideCompare</h1>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Settings className="w-6 h-6 text-gray-600" />
-            </Button>
+            <Link href="/settings">
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Settings className="w-6 h-6 text-gray-600" />
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
