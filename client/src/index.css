@@ -90,4 +90,32 @@
     outline: 2px solid hsl(207, 90%, 54%);
     outline-offset: 2px;
   }
+
+  /* Address autocomplete dropdown */
+  .address-dropdown {
+    backdrop-filter: blur(8px);
+    box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+    border: 1px solid hsl(var(--border));
+  }
+
+  .address-suggestion:hover {
+    background-color: hsl(var(--accent));
+  }
+
+  .address-suggestion:focus {
+    background-color: hsl(var(--accent));
+    outline: none;
+  }
+
+  /* Smooth transitions for dropdowns */
+  .dropdown-enter {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  .dropdown-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 150ms ease-out;
+  }
 }

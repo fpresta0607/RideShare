@@ -31,8 +31,19 @@ export const compareRidesSchema = z.object({
   preference: z.enum(["price", "speed", "luxury"]).default("price"),
 });
 
+// Address suggestion schema for autocomplete
+export const addressSuggestionSchema = z.object({
+  id: z.string(),
+  description: z.string(),
+  mainText: z.string(),
+  secondaryText: z.string(),
+  lat: z.number().optional(),
+  lng: z.number().optional(),
+});
+
 export type Ride = typeof rides.$inferSelect;
 export type InsertRide = z.infer<typeof insertRideSchema>;
 export type RideRequest = typeof rideRequests.$inferSelect;
 export type InsertRideRequest = z.infer<typeof insertRideRequestSchema>;
 export type CompareRidesRequest = z.infer<typeof compareRidesSchema>;
+export type AddressSuggestion = z.infer<typeof addressSuggestionSchema>;

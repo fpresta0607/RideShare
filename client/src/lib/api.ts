@@ -1,5 +1,5 @@
 import { apiRequest } from "./queryClient";
-import type { CompareRidesRequest } from "@shared/schema";
+import type { CompareRidesRequest, AddressSuggestion } from "@shared/schema";
 
 export const api = {
   compareRides: async (data: CompareRidesRequest) => {
@@ -14,6 +14,11 @@ export const api = {
 
   getRide: async (id: number) => {
     const response = await apiRequest("GET", `/api/rides/${id}`);
+    return response.json();
+  },
+
+  searchAddresses: async (query: string): Promise<AddressSuggestion[]> => {
+    const response = await apiRequest("GET", `/api/addresses/search?q=${encodeURIComponent(query)}`);
     return response.json();
   }
 };

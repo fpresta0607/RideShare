@@ -109,7 +109,9 @@ RideCompare is a full-stack web application designed to compare ride options bet
 
 ```
 Changelog:
-- July 08, 2025. Initial setup
+- July 08, 2025. Initial setup with ride comparison engine and mobile-first UI
+- July 08, 2025. Enhanced ride ranking system - recommended rides now appear at top of cohesive list
+- July 08, 2025. Added address autocomplete functionality with mock geocoding service for development
 ```
 
 ## User Preferences

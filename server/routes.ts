@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { compareRidesSchema, insertRideRequestSchema } from "@shared/schema";
+import { compareRidesSchema, insertRideRequestSchema, type AddressSuggestion } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -110,6 +110,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(ride);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch ride details" });
+    }
+  });
+
+  // Address autocomplete endpoint
+  app.get("/api/addresses/search", async (req, res) => {
+    try {
+      const query = req.query.q as string;
+      if (!query || query.length < 2) {
+        return res.json([]);
+      }
+
+      // Mock address suggestions - in production, this would use Google Places API or Mapbox
+      const mockAddresses: AddressSuggestion[] = [
+        {
+          id: "1",
+          description: "123 Main Street, San Francisco, CA, USA",
+          mainText: "123 Main Street",
+          secondaryText: "San Francisco, CA, USA",
+          lat: 37.7749,
+          lng: -122.4194
+        },
+        {
+          id: "2", 
+          description: "456 Market Street, San Francisco, CA, USA",
+          mainText: "456 Market Street",
+          secondaryText: "San Francisco, CA, USA",
+          lat: 37.7849,
+          lng: -122.4094
+        },
+        {
+          id: "3",
+          description: "789 Union Square, San Francisco, CA, USA", 
+          mainText: "789 Union Square",
+          secondaryText: "San Francisco, CA, USA",
+          lat: 37.7880,
+          lng: -122.4074
+        },
+        {
+          id: "4",
+          description: "101 California Street, San Francisco, CA, USA",
+          mainText: "101 California Street", 
+          secondaryText: "San Francisco, CA, USA",
+          lat: 37.7929,
+          lng: -122.3977
+        },
+        {
+          id: "5",
+          description: "San Francisco International Airport (SFO), San Francisco, CA, USA",
+          mainText: "San Francisco International Airport",
+          secondaryText: "SFO, San Francisco, CA, USA",
+          lat: 37.6213,
+          lng: -122.3790
+        },
+        {
+          id: "6",
+          description: "Golden Gate Park, San Francisco, CA, USA",
+          mainText: "Golden Gate Park",
+          secondaryText: "San Francisco, CA, USA", 
+          lat: 37.7694,
+          lng: -122.4862
+        },
+        {
+          id: "7",
+          description: "Fisherman's Wharf, San Francisco, CA, USA",
+          mainText: "Fisherman's Wharf",
+          secondaryText: "San Francisco, CA, USA",
+          lat: 37.8080,
+          lng: -122.4177
+        },
+        {
+          id: "8",
+          description: "Lombard Street, San Francisco, CA, USA",
+          mainText: "Lombard Street", 
+          secondaryText: "San Francisco, CA, USA",
+          lat: 37.8022,
+          lng: -122.4197
+        }
+      ];
+
+      // Filter based on query
+      const filtered = mockAddresses.filter(addr => 
+        addr.description.toLowerCase().includes(query.toLowerCase()) ||
+        addr.mainText.toLowerCase().includes(query.toLowerCase())
+      );
+
+      res.json(filtered.slice(0, 5)); // Return top 5 matches
+    } catch (error) {
+      res.status(500).json({ error: "Failed to search addresses" });
     }
   });
 

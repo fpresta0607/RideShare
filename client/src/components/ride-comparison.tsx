@@ -59,8 +59,25 @@ export default function RideComparison({ searchData }: RideComparisonProps) {
   if (!data) return null;
 
   const { rides, recommendedRide, tripInfo } = data;
-  const uberRides = rides.filter(ride => ride.service === "uber");
-  const lyftRides = rides.filter(ride => ride.service === "lyft");
+  
+  // Sort rides with recommended at the top, then by the user's preference
+  const sortedRides = [...rides].sort((a, b) => {
+    // Recommended ride always comes first
+    if (a.id === recommendedRide.id) return -1;
+    if (b.id === recommendedRide.id) return 1;
+    
+    // Then sort by preference
+    switch (tripInfo.preference) {
+      case 'price':
+        return parseFloat(a.price) - parseFloat(b.price);
+      case 'speed':
+        return a.eta - b.eta;
+      case 'luxury':
+        return b.luxuryLevel - a.luxuryLevel;
+      default:
+        return 0;
+    }
+  });
 
   return (
     <section className="p-4 space-y-4">
@@ -69,33 +86,19 @@ export default function RideComparison({ searchData }: RideComparisonProps) {
         <div className="text-sm text-gray-500">{tripInfo.estimatedDuration} trip</div>
       </div>
 
-      {/* Recommended Ride Badge */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+      {/* Preference indicator */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
         <div className="flex items-center space-x-2">
-          <CheckCircle className="w-5 h-5 text-green-600" />
-          <span className="text-sm font-medium text-green-800">Best match for your preference</span>
+          <CheckCircle className="w-5 h-5 text-blue-600" />
+          <span className="text-sm font-medium text-blue-800">
+            Sorted by {tripInfo.preference === 'speed' ? 'fastest pickup' : tripInfo.preference === 'luxury' ? 'luxury level' : 'best price'}
+          </span>
         </div>
       </div>
 
-      {/* Uber Options */}
+      {/* All rides sorted with recommended first */}
       <div className="space-y-3">
-        {uberRides.map((ride) => (
-          <RideCard 
-            key={ride.id} 
-            ride={ride} 
-            isRecommended={ride.id === recommendedRide.id}
-          />
-        ))}
-      </div>
-
-      {/* Lyft Options */}
-      <div className="space-y-3 mt-6">
-        <div className="flex items-center space-x-2 mb-3">
-          <div className="w-6 h-1 bg-pink-500 rounded"></div>
-          <span className="text-sm font-medium text-gray-600">LYFT OPTIONS</span>
-        </div>
-        
-        {lyftRides.map((ride) => (
+        {sortedRides.map((ride, index) => (
           <RideCard 
             key={ride.id} 
             ride={ride} 

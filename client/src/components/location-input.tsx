@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { MapPin, Navigation } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import AddressInput from "./address-input";
 import type { CompareRidesRequest } from "@shared/schema";
 
 interface LocationInputProps {
@@ -78,55 +76,26 @@ export default function LocationInput({ onSearch }: LocationInputProps) {
   return (
     <section className="bg-white shadow-sm p-4 border-b border-gray-200">
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Current Location */}
-        <div className="relative">
-          <Label htmlFor="from" className="block text-sm font-medium text-gray-700 mb-2">
-            From
-          </Label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <div className="w-3 h-3 bg-primary rounded-full"></div>
-            </div>
-            <Input
-              id="from"
-              type="text"
-              className="pl-10 pr-12 py-3"
-              placeholder="Current location"
-              value={fromLocation}
-              onChange={(e) => setFromLocation(e.target.value)}
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="absolute inset-y-0 right-0"
-              onClick={handleGetCurrentLocation}
-              disabled={isLoading}
-            >
-              <Navigation className="w-5 h-5 text-gray-400 hover:text-primary" />
-            </Button>
-          </div>
-        </div>
+        {/* Current Location with GPS and Autocomplete */}
+        <AddressInput
+          label="From"
+          placeholder="Current location"
+          value={fromLocation}
+          onChange={setFromLocation}
+          showGpsButton={true}
+          onGpsClick={handleGetCurrentLocation}
+          isLoadingGps={isLoading}
+          icon="pickup"
+        />
 
-        {/* Destination */}
-        <div className="relative">
-          <Label htmlFor="to" className="block text-sm font-medium text-gray-700 mb-2">
-            To
-          </Label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            </div>
-            <Input
-              id="to"
-              type="text"
-              className="pl-10 pr-3 py-3"
-              placeholder="Where to?"
-              value={toLocation}
-              onChange={(e) => setToLocation(e.target.value)}
-            />
-          </div>
-        </div>
+        {/* Destination with Autocomplete */}
+        <AddressInput
+          label="To"
+          placeholder="Where to?"
+          value={toLocation}
+          onChange={setToLocation}
+          icon="destination"
+        />
 
         {/* Search Button */}
         <Button 
