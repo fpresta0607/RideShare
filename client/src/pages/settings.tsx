@@ -111,8 +111,8 @@ export default function Settings() {
     totalTimeSaved: isDemoUser ? demoUserData.totalTimeSaved || 78 : 0,
     totalRides: isDemoUser ? demoUserData.totalRides || 15 : 0,
     name: isDemoUser ? demoUserData.name || 'Franco Presta' : '',
-    email: isDemoUser ? demoUserData.email || 'franco@example.com' : '',
-    phoneNumber: isDemoUser ? demoUserData.phoneNumber || '+1 (555) 123-4567' : '',
+    email: isDemoUser ? demoUserData.email || 'fpresta0607@gmail.com' : '',
+    phoneNumber: isDemoUser ? demoUserData.phoneNumber || '+1 (630) 674-9978' : '',
     preferredPayment: isDemoUser ? demoUserData.preferredPayment || 'card' : 'card',
     memberSince: isDemoUser ? demoUserData.memberSince || new Date().toISOString() : new Date().toISOString()
   };
@@ -310,7 +310,7 @@ export default function Settings() {
                       <span className="text-sm font-medium text-purple-800">Time Savings</span>
                     </div>
                     <div className="text-2xl font-bold text-purple-900 mt-2">
-                      {safeUserProfile.totalTimeSaved} min
+                      {isDemoUser ? 78 : safeUserProfile.totalTimeSaved} min
                     </div>
                     <div className="text-xs text-purple-600 mt-1">
                       Faster pickup times

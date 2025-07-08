@@ -26,7 +26,11 @@ export const api = {
     // Check for demo user first
     const demoUser = localStorage.getItem('demoUser');
     if (demoUser) {
-      return Promise.resolve(JSON.parse(demoUser));
+      const userData = JSON.parse(demoUser);
+      // Ensure email and phone are updated
+      userData.email = 'fpresta0607@gmail.com';
+      userData.phoneNumber = '+1 (630) 674-9978';
+      return Promise.resolve(userData);
     }
     
     const response = await apiRequest("GET", "/api/user/profile");

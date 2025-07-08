@@ -23,8 +23,8 @@ export default function DemoLogin() {
       localStorage.setItem('demoUser', JSON.stringify({
         id: '999',
         name: 'Franco Presta',
-        email: 'franco@example.com',
-        phoneNumber: '+1 (555) 123-4567',
+        email: 'fpresta0607@gmail.com',
+        phoneNumber: '+1 (630) 674-9978',
         preferredPayment: 'card',
         totalSavings: '47.85',
         totalTimeSaved: 78,
