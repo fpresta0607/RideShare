@@ -17,8 +17,8 @@ RideCompare is a full-stack web application designed to compare ride options bet
 ### Backend Architecture
 - **Runtime**: Node.js with Express.js framework
 - **Language**: TypeScript with ES modules
-- **Data Storage**: In-memory storage with planned PostgreSQL migration
-- **ORM**: Drizzle ORM configured for PostgreSQL
+- **Data Storage**: PostgreSQL database with Drizzle ORM
+- **ORM**: Drizzle ORM with Neon serverless PostgreSQL
 - **API Design**: RESTful API with JSON responses
 - **Validation**: Zod for runtime type validation
 
@@ -100,10 +100,11 @@ RideCompare is a full-stack web application designed to compare ride options bet
 - **Process Management**: Single Node.js process serving both frontend and API
 
 ### Database Setup
-- **Local Development**: In-memory storage for rapid prototyping
-- **Production**: PostgreSQL database with Drizzle migrations
-- **Schema Evolution**: Version-controlled database migrations
-- **Connection Management**: Serverless-optimized database connections
+- **Development & Production**: PostgreSQL database with Neon serverless hosting
+- **ORM**: Drizzle ORM with type-safe queries and automatic migrations
+- **Schema Evolution**: Version-controlled database migrations via Drizzle Kit
+- **Connection Management**: Serverless-optimized database connections with pooling
+- **Data Seeding**: Automatic ride data initialization on startup
 
 ## Changelog
 
@@ -112,6 +113,7 @@ Changelog:
 - July 08, 2025. Initial setup with ride comparison engine and mobile-first UI
 - July 08, 2025. Enhanced ride ranking system - recommended rides now appear at top of cohesive list
 - July 08, 2025. Added address autocomplete functionality with mock geocoding service for development
+- July 08, 2025. Migrated from in-memory storage to PostgreSQL database with Drizzle ORM
 ```
 
 ## User Preferences

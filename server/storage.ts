@@ -1,27 +1,40 @@
 import { rides, rideRequests, type Ride, type InsertRide, type RideRequest, type InsertRideRequest } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getRides(): Promise<Ride[]>;
   createRideRequest(request: InsertRideRequest): Promise<RideRequest>;
   getRideById(id: number): Promise<Ride | undefined>;
+  seedRides(): Promise<void>;
 }
 
-export class MemStorage implements IStorage {
-  private rides: Map<number, Ride>;
-  private rideRequests: Map<number, RideRequest>;
-  private currentRideId: number;
-  private currentRequestId: number;
-
-  constructor() {
-    this.rides = new Map();
-    this.rideRequests = new Map();
-    this.currentRideId = 1;
-    this.currentRequestId = 1;
-    this.seedRides();
+export class DatabaseStorage implements IStorage {
+  async getRides(): Promise<Ride[]> {
+    return await db.select().from(rides);
   }
 
-  private seedRides() {
-    const mockRides: Omit<Ride, 'id'>[] = [
+  async createRideRequest(request: InsertRideRequest): Promise<RideRequest> {
+    const [rideRequest] = await db
+      .insert(rideRequests)
+      .values(request)
+      .returning();
+    return rideRequest;
+  }
+
+  async getRideById(id: number): Promise<Ride | undefined> {
+    const [ride] = await db.select().from(rides).where(eq(rides.id, id));
+    return ride || undefined;
+  }
+
+  async seedRides(): Promise<void> {
+    // Check if rides already exist
+    const existingRides = await db.select().from(rides);
+    if (existingRides.length > 0) {
+      return; // Already seeded
+    }
+
+    const mockRides: InsertRide[] = [
       // Uber rides
       {
         service: "uber",
@@ -92,26 +105,8 @@ export class MemStorage implements IStorage {
       }
     ];
 
-    mockRides.forEach((ride) => {
-      const id = this.currentRideId++;
-      this.rides.set(id, { ...ride, id });
-    });
-  }
-
-  async getRides(): Promise<Ride[]> {
-    return Array.from(this.rides.values());
-  }
-
-  async createRideRequest(request: InsertRideRequest): Promise<RideRequest> {
-    const id = this.currentRequestId++;
-    const rideRequest: RideRequest = { ...request, id };
-    this.rideRequests.set(id, rideRequest);
-    return rideRequest;
-  }
-
-  async getRideById(id: number): Promise<Ride | undefined> {
-    return this.rides.get(id);
+    await db.insert(rides).values(mockRides);
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
