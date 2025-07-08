@@ -73,6 +73,17 @@ export default function RideComparison({ searchData }: RideComparisonProps) {
       case 'speed':
         return a.eta - b.eta;
       case 'luxury':
+        // For luxury, prioritize high luxury level (4-5) cars, then by lowest price
+        const aIsLuxury = a.luxuryLevel >= 4;
+        const bIsLuxury = b.luxuryLevel >= 4;
+        
+        if (aIsLuxury && !bIsLuxury) return -1;
+        if (!aIsLuxury && bIsLuxury) return 1;
+        if (aIsLuxury && bIsLuxury) {
+          // Both are luxury, sort by price
+          return parseFloat(a.price) - parseFloat(b.price);
+        }
+        // Neither is luxury, sort by luxury level
         return b.luxuryLevel - a.luxuryLevel;
       default:
         return 0;

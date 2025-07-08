@@ -70,9 +70,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           );
           break;
         case 'luxury':
-          recommendedRide = ridesWithVariations.reduce((prev, current) => 
-            prev.luxuryLevel > current.luxuryLevel ? prev : current
-          );
+          // For luxury, prioritize high luxury level (4-5) cars, then by lowest price
+          const luxuryRides = ridesWithVariations.filter(ride => ride.luxuryLevel >= 4);
+          if (luxuryRides.length > 0) {
+            recommendedRide = luxuryRides.reduce((prev, current) => 
+              parseFloat(prev.price) < parseFloat(current.price) ? prev : current
+            );
+          } else {
+            // Fallback to highest luxury level if no luxury cars available
+            recommendedRide = ridesWithVariations.reduce((prev, current) => 
+              prev.luxuryLevel > current.luxuryLevel ? prev : current
+            );
+          }
           break;
         default:
           recommendedRide = ridesWithVariations[0];

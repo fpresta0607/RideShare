@@ -24,14 +24,6 @@ export default function RideCard({ ride, isRecommended = false }: RideCardProps)
         }`}
         onClick={() => setShowModal(true)}
       >
-        {isRecommended && (
-          <div className="absolute top-3 right-3">
-            <Badge className="bg-green-600 text-white text-xs px-2 py-1 rounded-full font-medium">
-              RECOMMENDED
-            </Badge>
-          </div>
-        )}
-        
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
@@ -40,6 +32,11 @@ export default function RideCard({ ride, isRecommended = false }: RideCardProps)
             <div>
               <div className="flex items-center space-x-2">
                 <h4 className="font-semibold text-gray-900">{ride.name}</h4>
+                {isRecommended && (
+                  <Badge className="bg-green-600 text-white text-xs px-2 py-1 rounded-full font-medium">
+                    RECOMMENDED
+                  </Badge>
+                )}
                 <Badge variant="secondary" className="text-xs">
                   {ride.seats} seats
                 </Badge>

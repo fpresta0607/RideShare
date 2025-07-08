@@ -114,6 +114,7 @@ Changelog:
 - July 08, 2025. Enhanced ride ranking system - recommended rides now appear at top of cohesive list
 - July 08, 2025. Added address autocomplete functionality with mock geocoding service for development
 - July 08, 2025. Migrated from in-memory storage to PostgreSQL database with Drizzle ORM
+- July 08, 2025. Improved luxury ranking to prioritize black/lux cars by lowest price, moved recommended badge to not cover pricing
 ```
 
 ## User Preferences
