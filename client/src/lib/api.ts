@@ -101,7 +101,7 @@ export const api = {
     return response.json();
   },
 
-  getSavingsAnalytics: async (period: '3D' | '1W' | '3M' | '6M' | '1Y' | 'ALL' = 'ALL') => {
+  getSavingsAnalytics: async (period: '1W' | '3M' | '6M' | '1Y' | 'ALL' = 'ALL') => {
     // Return demo analytics for demo users
     const demoUser = localStorage.getItem('demoUser');
     if (demoUser) {

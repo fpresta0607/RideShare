@@ -141,7 +141,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(rideRequests).orderBy(sql`created_at DESC`).limit(20);
   }
 
-  async getSavingsAnalytics(period: '3D' | '1W' | '3M' | '6M' | '1Y' | 'ALL'): Promise<{
+  async getSavingsAnalytics(period: '1W' | '3M' | '6M' | '1Y' | 'ALL'): Promise<{
     totalSavings: number;
     priceSavings: number;
     timeSavings: number;

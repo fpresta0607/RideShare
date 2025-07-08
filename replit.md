@@ -124,6 +124,8 @@ Changelog:
 - July 08, 2025. Updated potential savings calculation to show difference between top two ride options instead of platform comparison
 - July 08, 2025. Added demo login system (franco/presta) for preview purposes while maintaining real authentication framework
 - July 08, 2025. Removed time saved section from savings analytics breakdown per user request
+- July 08, 2025. Enhanced demo user data with realistic ride history (8 rides across different SF locations) and savings ($47.85 total)
+- July 08, 2025. Updated analytics periods to 1 week, 3 months, 6 months, 1 year, and all time with improved chart formatting
 ```
 
 ## User Preferences
