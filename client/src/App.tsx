@@ -7,14 +7,20 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Settings from "@/pages/settings";
 import Landing from "@/pages/landing";
+import DemoLogin from "@/pages/demo-login";
 import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
+  
+  // Check for demo user
+  const demoUser = localStorage.getItem('demoUser');
+  const isDemoAuthenticated = !!demoUser;
 
   return (
     <Switch>
-      {isLoading || !isAuthenticated ? (
+      <Route path="/demo-login" component={DemoLogin} />
+      {(isLoading || (!isAuthenticated && !isDemoAuthenticated)) ? (
         <Route path="/" component={Landing} />
       ) : (
         <>

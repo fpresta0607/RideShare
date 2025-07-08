@@ -120,6 +120,10 @@ Changelog:
 - July 08, 2025. Enhanced savings analytics with time-based filtering (3M, 6M, 1Y, All time) and proper minute tracking for time savings calculations
 - July 08, 2025. Enhanced ride confirmation system with improved deep linking to Uber/Lyft apps and better user experience with confirmation modals
 - July 08, 2025. Improved savings analytics with separate time savings display and stock-like line chart visualization showing cumulative savings over time
+- July 08, 2025. Fixed userProfile undefined errors throughout settings page with safe fallback values
+- July 08, 2025. Updated potential savings calculation to show difference between top two ride options instead of platform comparison
+- July 08, 2025. Added demo login system (franco/presta) for preview purposes while maintaining real authentication framework
+- July 08, 2025. Removed time saved section from savings analytics breakdown per user request
 ```
 
 ## User Preferences

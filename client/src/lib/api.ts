@@ -23,16 +23,63 @@ export const api = {
   },
 
   getUserProfile: async () => {
+    // Check for demo user first
+    const demoUser = localStorage.getItem('demoUser');
+    if (demoUser) {
+      return JSON.parse(demoUser);
+    }
+    
     const response = await apiRequest("GET", "/api/user/profile");
     return response.json();
   },
 
   getRideHistory: async () => {
+    // Return demo data for demo users
+    const demoUser = localStorage.getItem('demoUser');
+    if (demoUser) {
+      return [
+        {
+          id: 1,
+          fromLocation: "Union Square",
+          toLocation: "SFO Airport",
+          preference: "price",
+          createdAt: new Date(Date.now() - 86400000).toISOString(),
+        },
+        {
+          id: 2,
+          fromLocation: "Mission District", 
+          toLocation: "Financial District",
+          preference: "speed",
+          createdAt: new Date(Date.now() - 172800000).toISOString(),
+        },
+        {
+          id: 3,
+          fromLocation: "Castro",
+          toLocation: "Nob Hill", 
+          preference: "luxury",
+          createdAt: new Date(Date.now() - 259200000).toISOString(),
+        }
+      ];
+    }
+    
     const response = await apiRequest("GET", "/api/user/ride-history");
     return response.json();
   },
 
   getSavingsAnalytics: async (period: '3M' | '6M' | '1Y' | 'ALL' = 'ALL') => {
+    // Return demo analytics for demo users
+    const demoUser = localStorage.getItem('demoUser');
+    if (demoUser) {
+      return {
+        totalSavings: 24.50,
+        priceSavings: 18.75,
+        luxurySavings: 5.75,
+        totalMinutesSaved: 35,
+        rideCount: 12,
+        cumulativeData: []
+      };
+    }
+    
     const response = await apiRequest("GET", `/api/user/savings-analytics?period=${period}`);
     return response.json();
   }

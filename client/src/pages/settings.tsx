@@ -361,20 +361,7 @@ export default function Settings() {
                       ${safeAnalyticsData.luxurySavings.toFixed(2)}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-gray-600">⚡ Time saved</span>
-                      <button 
-                        className="w-4 h-4 bg-gray-200 text-gray-600 rounded-full text-xs flex items-center justify-center hover:bg-gray-300"
-                        title="Minutes saved by choosing rides with faster pickup times"
-                      >
-                        ?
-                      </button>
-                    </div>
-                    <span className="font-medium text-blue-600">
-                      {safeAnalyticsData.totalMinutesSaved} min
-                    </span>
-                  </div>
+
                 </div>
               </div>
             )}
@@ -460,7 +447,12 @@ export default function Settings() {
             <Button 
               variant="outline" 
               className="w-full justify-start text-red-600 hover:text-red-700"
-              onClick={() => window.location.href = '/api/logout'}
+              onClick={() => {
+                // Clear demo user if exists
+                localStorage.removeItem('demoUser');
+                // Then redirect to logout or home
+                window.location.href = localStorage.getItem('demoUser') ? '/' : '/api/logout';
+              }}
             >
               Sign Out
             </Button>
