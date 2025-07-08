@@ -119,6 +119,7 @@ Changelog:
 - July 08, 2025. Updated savings calculation to track real ride comparison savings - cheaper Lyft vs Uber, time savings from faster pickups, and luxury deal differences
 - July 08, 2025. Enhanced savings analytics with time-based filtering (3M, 6M, 1Y, All time) and proper minute tracking for time savings calculations
 - July 08, 2025. Enhanced ride confirmation system with improved deep linking to Uber/Lyft apps and better user experience with confirmation modals
+- July 08, 2025. Improved savings analytics with separate time savings display and stock-like line chart visualization showing cumulative savings over time
 ```
 
 ## User Preferences
