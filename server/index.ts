@@ -44,7 +44,9 @@ app.use((req, res, next) => {
     // No longer seeding users for production
     log("Database seeded successfully");
   } catch (error) {
-    log(`Database seed error: ${error}`);
+    log("Database seed error:", error instanceof Error ? error.message : JSON.stringify(error, null, 2));
+
+
   }
 
   const server = await registerRoutes(app);
