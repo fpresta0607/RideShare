@@ -101,28 +101,24 @@ export default function Settings() {
     queryFn: () => api.getSavingsAnalytics(analyticsPeriod),
   });
 
-  // Check if we're using demo data
-  const isDemoUser = !!localStorage.getItem('demoUser');
-  const demoUserData = isDemoUser ? JSON.parse(localStorage.getItem('demoUser') || '{}') : {};
-
-  // Provide fallback values with demo data support
+  // Safe fallbacks for production data
   const safeUserProfile = userProfile || {
-    totalSavings: isDemoUser ? demoUserData.totalSavings || '47.85' : '0.00',
-    totalTimeSaved: isDemoUser ? demoUserData.totalTimeSaved || 78 : 0,
-    totalRides: isDemoUser ? demoUserData.totalRides || 15 : 0,
-    name: isDemoUser ? demoUserData.name || 'Franco Presta' : '',
-    email: isDemoUser ? demoUserData.email || 'fpresta0607@gmail.com' : '',
-    phoneNumber: isDemoUser ? demoUserData.phoneNumber || '+1 (630) 674-9978' : '',
-    preferredPayment: isDemoUser ? demoUserData.preferredPayment || 'card' : 'card',
-    memberSince: isDemoUser ? demoUserData.memberSince || new Date().toISOString() : new Date().toISOString()
+    totalSavings: '0.00',
+    totalTimeSaved: 0,
+    totalRides: 0,
+    name: '',
+    email: '',
+    phoneNumber: '',
+    preferredPayment: 'card',
+    memberSince: new Date().toISOString()
   };
 
   const safeAnalyticsData = analyticsData || {
-    totalSavings: isDemoUser ? 47.85 : 0,
-    priceSavings: isDemoUser ? 32.40 : 0,
-    luxurySavings: isDemoUser ? 15.45 : 0,
-    totalMinutesSaved: isDemoUser ? 78 : 0,
-    rideCount: isDemoUser ? 15 : 0,
+    totalSavings: 0,
+    priceSavings: 0,
+    luxurySavings: 0,
+    totalMinutesSaved: 0,
+    rideCount: 0,
     cumulativeData: []
   };
 
@@ -310,7 +306,7 @@ export default function Settings() {
                       <span className="text-sm font-medium text-purple-800">Time Savings</span>
                     </div>
                     <div className="text-2xl font-bold text-purple-900 mt-2">
-                      {isDemoUser ? 78 : safeUserProfile.totalTimeSaved} min
+                      {safeUserProfile.totalTimeSaved} min
                     </div>
                     <div className="text-xs text-purple-600 mt-1">
                       Faster pickup times
@@ -477,26 +473,7 @@ export default function Settings() {
               variant="outline" 
               className="w-full justify-start text-red-600 hover:text-red-700"
               onClick={() => {
-                const isDemoUser = !!localStorage.getItem('demoUser');
-                if (isDemoUser) {
-                  // Clear demo user and force page reload
-                  localStorage.removeItem('demoUser');
-                  window.location.reload();
-                } else {
-                  // Regular logout for authenticated users - force logout then reload
-                  fetch('/api/logout', { method: 'GET' })
-                    .then(() => {
-                      // Clear any cached auth state
-                      localStorage.clear();
-                      sessionStorage.clear();
-                      // Force page reload to clear React Query cache
-                      window.location.href = '/';
-                    })
-                    .catch(() => {
-                      // Fallback - just reload the page
-                      window.location.href = '/';
-                    });
-                }
+                window.location.href = '/api/logout';
               }}
             >
               Sign Out

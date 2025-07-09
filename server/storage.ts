@@ -58,7 +58,7 @@ export class DatabaseStorage implements IStorage {
       return; // Already seeded
     }
 
-    const mockRides: InsertRide[] = [
+    const sampleRides: InsertRide[] = [
       // Uber rides
       {
         service: "uber",
@@ -129,7 +129,7 @@ export class DatabaseStorage implements IStorage {
       }
     ];
 
-    await db.insert(rides).values(mockRides);
+    await db.insert(rides).values(sampleRides);
   }
 
   async getUserProfile(): Promise<User | undefined> {
@@ -228,93 +228,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async seedUser(): Promise<void> {
-    // Check if user already exists
-    const existingUser = await db.select().from(users).limit(1);
-    if (existingUser.length > 0) {
-      return; // Already seeded
-    }
-
-    const mockUser: InsertUser = {
-      name: "Alex Chen",
-      email: "alex.chen@email.com",
-      phoneNumber: "+1 (555) 123-4567",
-      preferredPayment: "card",
-      totalRides: 47,
-      totalSpent: "892.45",
-      totalSavings: "20.00",
-      totalTimeSaved: 89
-    };
-
-    await db.insert(users).values(mockUser);
-    
-    // Add historical ride requests with realistic savings over different time periods
-    const now = new Date();
-    const threeMonthsAgo = new Date(now.getTime() - (90 * 24 * 60 * 60 * 1000));
-    const sixMonthsAgo = new Date(now.getTime() - (180 * 24 * 60 * 60 * 1000));
-    const oneYearAgo = new Date(now.getTime() - (365 * 24 * 60 * 60 * 1000));
-
-    const mockRideHistory: InsertRideRequest[] = [
-      // Recent rides (last 3 months)
-      {
-        fromLocation: "Golden Gate Park, San Francisco, CA",
-        toLocation: "San Francisco International Airport (SFO)",
-        preference: "price",
-        selectedRideId: 2,
-        recommendedRideId: 2,
-        potentialSavings: "4.50",
-        savingsType: "price",
-        timeSavedMinutes: 0,
-        createdAt: new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000)).toISOString()
-      },
-      {
-        fromLocation: "456 Market Street, San Francisco, CA",
-        toLocation: "Fisherman's Wharf, San Francisco, CA",
-        preference: "speed",
-        selectedRideId: 1,
-        recommendedRideId: 1,
-        potentialSavings: "3.75",
-        savingsType: "time",
-        timeSavedMinutes: 5, // 5 minutes faster pickup
-        createdAt: new Date(now.getTime() - (15 * 24 * 60 * 60 * 1000)).toISOString()
-      },
-      // 6 month old rides
-      {
-        fromLocation: "123 Main Street, San Francisco, CA",
-        toLocation: "Union Square, San Francisco, CA",
-        preference: "luxury",
-        selectedRideId: 8,
-        recommendedRideId: 8,
-        potentialSavings: "8.00",
-        savingsType: "luxury",
-        timeSavedMinutes: 0,
-        createdAt: new Date(sixMonthsAgo.getTime() + (30 * 24 * 60 * 60 * 1000)).toISOString()
-      },
-      {
-        fromLocation: "Lombard Street, San Francisco, CA",
-        toLocation: "101 California Street, San Francisco, CA",
-        preference: "price",
-        selectedRideId: 4,
-        recommendedRideId: 4,
-        potentialSavings: "3.25",
-        savingsType: "price",
-        timeSavedMinutes: 0,
-        createdAt: new Date(sixMonthsAgo.getTime() + (45 * 24 * 60 * 60 * 1000)).toISOString()
-      },
-      // Older rides (1 year)
-      {
-        fromLocation: "Mission District, San Francisco, CA",
-        toLocation: "Castro District, San Francisco, CA",
-        preference: "speed",
-        selectedRideId: 3,
-        recommendedRideId: 3,
-        potentialSavings: "2.25",
-        savingsType: "time",
-        timeSavedMinutes: 3, // 3 minutes faster
-        createdAt: new Date(oneYearAgo.getTime() + (60 * 24 * 60 * 60 * 1000)).toISOString()
-      }
-    ];
-
-    await db.insert(rideRequests).values(mockRideHistory);
+    // No user seeding for production deployment
+    return Promise.resolve();
   }
 }
 

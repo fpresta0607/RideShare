@@ -1,25 +1,12 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Smartphone, TrendingDown, Clock, Star } from "lucide-react";
-import DemoLogin from "@/components/demo-login";
 
 export default function Landing() {
-  const [showDemoLogin, setShowDemoLogin] = useState(false);
-
   const handleLogin = () => {
     window.location.href = "/api/login";
   };
-
-  const handleDemoLogin = () => {
-    // Simulate successful login by redirecting to home
-    window.location.reload();
-  };
-
-  if (showDemoLogin) {
-    return <DemoLogin onLogin={handleDemoLogin} />;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
@@ -55,29 +42,18 @@ export default function Landing() {
             </p>
           </div>
 
-          <div className="space-y-3">
-            <Button
-              onClick={() => window.location.href = '/demo-login'}
-              size="lg"
-              className="w-full py-4 text-lg font-medium bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
-            >
-              Try Demo Login
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-            
-            <Button
-              onClick={handleLogin}
-              variant="outline"
-              size="lg"
-              className="w-full py-4 text-lg font-medium"
-            >
-              Sign In with Real Account
-            </Button>
-            
-            <p className="text-sm text-gray-500 text-center">
-              Demo: franco / presta • Free to use
-            </p>
-          </div>
+          <Button
+            onClick={handleLogin}
+            size="lg"
+            className="w-full py-4 text-lg font-medium bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
+          >
+            Get Started
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </Button>
+          
+          <p className="text-sm text-gray-500 mt-3 text-center">
+            Sign in to start comparing and saving on rides
+          </p>
         </div>
 
         {/* Features */}

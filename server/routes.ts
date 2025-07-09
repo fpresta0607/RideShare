@@ -5,25 +5,20 @@ import { compareRidesSchema, insertRideRequestSchema, type AddressSuggestion } f
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Simple auth simulation routes
+  // Production auth routes - ready for OAuth integration
   app.get("/api/auth/user", async (req, res) => {
-    // For demo purposes, return a mock user (in production this would check session/token)
-    try {
-      const user = await storage.getUserProfile();
-      res.json(user);
-    } catch (error) {
-      res.status(401).json({ message: "Unauthorized" });
-    }
+    // This endpoint would validate JWT/session token in production
+    res.status(401).json({ message: "Unauthorized - Please integrate OAuth provider" });
   });
 
   app.get("/api/login", (req, res) => {
-    // For demo purposes, redirect to home (in production this would initiate OAuth)
-    res.redirect("/");
+    // Placeholder for OAuth login initiation (Auth0, Supabase, Clerk, etc.)
+    res.status(501).json({ message: "Login provider not configured" });
   });
 
   app.get("/api/logout", (req, res) => {
-    // For demo purposes, redirect to home (in production this would clear session)
-    res.redirect("/");
+    // Placeholder for OAuth logout (clear session/tokens)
+    res.status(501).json({ message: "Logout provider not configured" });
   });
 
   // Get all available rides
@@ -185,8 +180,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json([]);
       }
 
-      // Mock address suggestions - in production, this would use Google Places API or Mapbox
-      const mockAddresses: AddressSuggestion[] = [
+      // Placeholder address suggestions - replace with Google Places API or Mapbox in production
+      const addresses: AddressSuggestion[] = [
         {
           id: "1",
           description: "123 Main Street, San Francisco, CA, USA",
@@ -254,7 +249,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ];
 
       // Filter based on query
-      const filtered = mockAddresses.filter(addr => 
+      const filtered = addresses.filter(addr => 
         addr.description.toLowerCase().includes(query.toLowerCase()) ||
         addr.mainText.toLowerCase().includes(query.toLowerCase())
       );

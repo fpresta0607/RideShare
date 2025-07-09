@@ -41,7 +41,7 @@ app.use((req, res, next) => {
   // Initialize database and seed with rides data
   try {
     await storage.seedRides();
-    await storage.seedUser();
+    // No longer seeding users for production
     log("Database seeded successfully");
   } catch (error) {
     log(`Database seed error: ${error}`);
