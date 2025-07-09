@@ -7,6 +7,7 @@ export function useAuth() {
   const { data: user, isLoading } = useQuery({
     queryKey: ["/api/auth/user"],
     retry: false,
+    enabled: !demoUser, // Don't fetch real user if demo user exists
   });
 
   // If demo user exists, use that instead of real auth

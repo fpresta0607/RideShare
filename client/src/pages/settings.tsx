@@ -479,12 +479,23 @@ export default function Settings() {
               onClick={() => {
                 const isDemoUser = !!localStorage.getItem('demoUser');
                 if (isDemoUser) {
-                  // Clear demo user and redirect to home
+                  // Clear demo user and force page reload
                   localStorage.removeItem('demoUser');
-                  window.location.href = '/';
+                  window.location.reload();
                 } else {
-                  // Regular logout for authenticated users
-                  window.location.href = '/api/logout';
+                  // Regular logout for authenticated users - force logout then reload
+                  fetch('/api/logout', { method: 'GET' })
+                    .then(() => {
+                      // Clear any cached auth state
+                      localStorage.clear();
+                      sessionStorage.clear();
+                      // Force page reload to clear React Query cache
+                      window.location.href = '/';
+                    })
+                    .catch(() => {
+                      // Fallback - just reload the page
+                      window.location.href = '/';
+                    });
                 }
               }}
             >
