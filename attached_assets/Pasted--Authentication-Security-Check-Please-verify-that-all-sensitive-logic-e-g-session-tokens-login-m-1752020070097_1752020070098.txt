@@ -1,0 +1,47 @@
+ Authentication Security Check
+Please verify that all sensitive logic (e.g., session tokens, login methods, JWT handling) is secured and does not expose secrets in frontend code. Ensure OAuth client secrets are stored only in environment variables.
+
+🔒 .env / Secrets Audit
+Remove all demo .env values from the client bundle. Ensure environment variables like DATABASE_URL, NEXT_PUBLIC_API_KEY, and OAuth credentials are loaded at runtime only and not bundled in the frontend.
+
+🚫 Remove Dev-Only Libraries
+Remove any development-only libraries (e.g., mock-service-worker, faker, react-hot-toast for dev use, etc.) from production dependencies. Keep only what's truly needed.
+
+🧪 Testing & Error Handling
+Please ensure:
+
+All buttons and links handle loading, success, and error states properly
+
+Empty states (e.g., “no rides found”) are designed and tested
+
+There is no undefined/null runtime crash potential on real API data
+
+A global 404 route is in place and styled properly
+
+🗺️ Geolocation & Address Input
+Confirm that the geolocation & address autocomplete input is mobile-first, responsive, and returns lat/lng cleanly for ride request submission. Stub fallback behavior if GPS is denied.
+
+💳 Payments & Redirects (Future Planning)
+Verify that the app structure supports the future addition of Stripe or in-app payments if you decide to monetize bookings directly (instead of deep linking to Uber/Lyft).
+
+🚀 PWA Optimization (iPhone Ready)
+Confirm that PWA settings include:
+
+manifest.json with app name/icon
+
+apple-mobile-web-app-capable meta tag
+
+Splash screen and icon logic for install on iOS
+
+Service worker is registered and working
+
+📁 File & Commit Hygiene
+Final project hygiene before pushing to GitHub:
+
+Delete unused components, styles, assets, icons
+
+Double check .gitignore includes .env, .DS_Store, node_modules/, .vscode/, etc.
+
+Squash demo-related commit messages (e.g., “debug fix” or “temp data”) into clean commit history
+
+Re-run npm audit fix to resolve known vulnerabilities if possible
